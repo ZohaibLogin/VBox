@@ -1,0 +1,92 @@
+#pjax-container
+
+	.container-fluid.main-inner-container
+		.row.kh-main-content
+			.category-main-section.live-channels.col-md-12.col-sm-12.col-xs-12.no-padding-left
+				h3.no-margin-bottom Live Channels
+				- i = 0
+				- while i < 24
+					- i += 1
+					.col-md-2.col-sm-3.col-xs-6.no-padding
+						.video-block.category-block-indent.live-channels-page-block
+							.hovereffect
+								img src = "#"
+								.overlay
+									a.info.fa.fa-play-circle href = "#" 
+
+javascript:
+
+	$('.video-block').each(function(i) {
+			
+		var topOfObject = $(this).offset().top,
+			bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+		if (bottomOfWindow > topOfObject) {
+			$(this).animate({'opacity': '1'}, 500);
+		}
+
+	});
+    $('.featured-video-block').each(function(i) {
+                    
+        var topOfObject = $(this).offset().top,
+              bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+        if (bottomOfWindow > topOfObject) {
+              $(this).animate({'opacity': '1'}, 500);
+        }
+
+    });
+
+	$(window).scroll(function() {
+		$('.video-block').each(function(i) {
+			
+			var topOfObject = $(this).offset().top,
+				bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+				$(this).animate({'opacity': '1'}, 500);
+			}
+
+		});
+        $('.featured-video-block').each(function(i) {
+                    
+			var topOfObject = $(this).offset().top,
+			    bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+			    $(this).animate({'opacity': '1'}, 500);
+			}
+
+        });
+	});
+
+	$(window).load(function() {
+
+		bp_ajax({
+        
+			action: 'live_channels_page',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+			    $('.live-channels-page-block').each(function(i, obj) {
+
+					if (data['data']['data'][i]) {
+
+					    $(this).find("img").attr("src", data['data']['data'][i]['thumb_url']);
+
+					}
+
+			    });
+
+			    $('#cover').fadeOut(100);
+			    $("body").css("overflow", "auto");
+
+			}
+
+        });
+
+
+	});

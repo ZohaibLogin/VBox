@@ -1,0 +1,233 @@
+#pjax-container
+	= render 'loader_and_no_internet'
+
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content.v-favorites-page.no-padding
+			.category-main-section.music-play-info-container.col-md-12.col-sm-12.col-xs-12.no-padding
+				.music-favorite-section.col-md-12.col-sm-12.col-xs-12.v-hide
+					.v-fav-top-wrapper
+						span.v-homepage-heading.fav-heading-indent My 
+						span.v-homepage-heading.v-green-word Favorites
+					.v-favorite-menu
+						button.v-fav-video-link.active-fav-menu Videos
+						button.v-fav-album-link Albums
+						button.v-fav-artist-link Artists
+					.v-fav-videos
+					.v-fav-albums.no-display
+					.v-fav-artists.no-display
+
+javascript:
+
+	var   htmlRowEl,
+          dynamicPartOne,
+          dynamicPartTwo,
+          dynamicPartThree,
+          dynamicPartFour,
+          dynamicPartFive,
+          dynamicPartSix,
+          dynamicParts,
+          outerColDiv = '<div class="col-md-2 col-sm-3 col-xs-6 no-padding">',
+          videoBlockDiv = '<div class="video-block">',
+          titleDiv = '<div class="vblock-content-wrapper">',
+          twoClosingDivs = '</div></div>';
+
+    var rowInitial = outerColDiv + videoBlockDiv;
+
+    $('.v-fav-album-link').on('click',function(e) {
+
+      e.preventDefault();
+
+      $('.v-fav-album-link').addClass('active-fav-menu');
+      $('.v-fav-album-link').siblings().removeClass('active-fav-menu');
+      $('.v-fav-albums').removeClass('no-display');
+
+      if (!$('.v-fav-artists').hasClass('no-display')) {
+
+            $('.v-fav-artists').addClass('no-display');
+
+      } 
+      if (!$('.v-fav-videos').hasClass('no-display')) {
+
+            $('.v-fav-videos').addClass('no-display');
+
+      }
+
+	});
+
+	$('.v-fav-artist-link').on('click',function(e) {
+
+      e.preventDefault();
+
+      $('.v-fav-artist-link').addClass('active-fav-menu');
+      $('.v-fav-artist-link').siblings().removeClass('active-fav-menu');
+      $('.v-fav-artists').removeClass('no-display');
+      
+      if (!$('.v-fav-albums').hasClass('no-display')) {
+
+            $('.v-fav-albums').addClass('no-display');
+
+      } 
+      if (!$('.v-fav-videos').hasClass('no-display')) {
+
+            $('.v-fav-videos').addClass('no-display');
+
+      }
+
+	});
+
+	$('.v-fav-video-link').on('click',function(e) {
+		
+		e.preventDefault();
+
+      $('.v-fav-video-link').addClass('active-fav-menu');
+      $('.v-fav-video-link').siblings().removeClass('active-fav-menu');
+      $('.v-fav-videos').removeClass('no-display');
+      
+      if (!$('.v-fav-artists').hasClass('no-display')) {
+
+            $('.v-fav-artists').addClass('no-display');
+
+      } 
+      if (!$('.v-fav-albums').hasClass('no-display')) {
+
+            $('.v-fav-albums').addClass('no-display');
+
+      }
+
+	});
+
+    
+
+    function favoritesPageAjaxCalls() {
+    
+    	bp_ajax({
+
+			action: 'get_user_favorites',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				if (data['success'] == false) {
+		      		$('.hp-first-loader').addClass('v-hide');
+		      		$('.slow-or-no-internet').removeClass('v-hide');
+		      		return;
+		      	}
+
+		      	$('.hp-first-loader').addClass('v-hide');
+
+				$('.music-favorite-section').removeClass('v-hide');
+
+				if (data['data'] == 0) {
+					$('.v-fav-videos').append('<p class="no-fav-msg"> No data available </p>');
+				}
+				else {
+					if (data['data']['likes'].length < 1) {
+						$('.v-fav-videos').append('<p class="no-fav-msg"> You dont have liked/favorited videos </p>');
+					}
+				}
+
+				for (var i = 0; i < data['data']['likes'].length; i++) {
+
+					dynamicPartOne = '<a class="video-play-link ajax-link" href="/video?id=' + data['data']['likes'][i]['video']['id'] + '"><img class="img-responsive video-thumbnail" src=' + data['data']['likes'][i]['video']['thumb_url_169'] + '></img> <span class="duration">' + data['data']['likes'][i]['video']['duration'].substring(3) + '</span>';
+					dynamicPartFour = '<p>' + data['data']['likes'][i]['video']['title'] + '</p></a>';
+					dynamicPartFive = '<span>' + data['data']['likes'][i]['video']['views'] + ' views </span>';
+
+					dynamicPartsTwo = titleDiv + dynamicPartFour + dynamicPartFive;                      
+
+					htmlRowEl = rowInitial + dynamicPartOne + dynamicPartsTwo + twoClosingDivs;
+
+					$('.v-fav-videos').append(htmlRowEl);
+
+			    }
+				
+
+			}
+
+        });
+
+		bp_ajax({
+
+			action: 'user_favorite_albums',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				console.log(data);
+
+				if (data['data']['liked_albums']['data'].length < 1) {
+					$('.v-fav-albums').append('<p class="no-fav-msg"> You dont have liked/favorited albums </p>');
+				}
+
+				for (var i = 0; i < data['data']['liked_albums']['data'].length; i++) {
+
+					dynamicPartOne = '<a class="video-play-link ajax-link" href="/music?id=' + data['data']['liked_albums']['data'][i]['id'] + '"><img class="img-responsive" src=' + data['data']['liked_albums']['data'][i]['thumb_url'] + '></img>';
+
+					dynamicPartsTwo = titleDiv + '<p>' + data['data']['liked_albums']['data'][i]['title'] + '</p></a>';                      
+
+					htmlRowEl = rowInitial + dynamicPartOne + dynamicPartsTwo + twoClosingDivs;
+
+					$('.v-fav-albums').append(htmlRowEl);
+
+			    }
+				
+
+			}
+
+        });
+
+        bp_ajax({
+
+			action: 'user_favorite_artists',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				if (data['data']['liked_artists']['data'].length < 1) {
+					$('.v-fav-artists').append('<p class="no-fav-msg"> You dont have liked/favorited artists </p>');
+				}
+
+				for (var i = 0; i < data['data']['liked_artists']['data'].length; i++) {
+
+					dynamicPartOne = '<a class="video-play-link ajax-link" href="/music?artist_id=' + data['data']['liked_artists']['data'][i]['id'] + '"><img class="img-responsive" src=' + data['data']['liked_artists']['data'][i]['thumb_url'] + '></img>';
+
+					dynamicPartsTwo = titleDiv + '<p>' + data['data']['liked_artists']['data'][i]['name'] + '</p></a>';                   
+
+					htmlRowEl = rowInitial + dynamicPartOne + dynamicPartsTwo + twoClosingDivs;
+
+					$('.v-fav-artists').append(htmlRowEl);
+
+			    }
+				
+
+			}
+
+        });
+
+    }
+
+	$(window).load(function(e) {
+
+		e.preventDefault();
+
+		setTimeout(function() {
+
+            if (!$('.hp-first-loader').hasClass('v-hide')) {
+                  $('.hp-first-loader').addClass('v-hide');
+                  $('.slow-or-no-internet').removeClass('v-hide');
+                  $('.kh-main-content').addClass('v-hide');
+                  return;
+            }
+
+      	}, 15000);
+
+		$('.favorites-menu').addClass('active-menu-link').siblings().removeClass('active-menu-link');
+		
+		favoritesPageAjaxCalls();
+
+	});

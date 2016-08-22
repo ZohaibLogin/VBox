@@ -1,0 +1,285 @@
+#pjax-container
+	= render 'loader_and_no_internet'
+
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content.v-playlists-page.no-padding
+			.category-main-section.music-play-info-container.col-md-12.col-sm-12.col-xs-12.no-padding
+				.music-playlist-section.col-md-12.col-sm-12.col-xs-12.no-padding-left.no-padding-right
+					span.v-homepage-heading.v-heading-indent Edit 
+					span.v-homepage-heading.v-green-word Playlists
+
+#confirmSongDeletionModal.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1" 
+  .modal-dialog role="document" 
+    .modal-content
+      .modal-header
+        button.close aria-label="Close" data-dismiss="modal" type="button" 
+          span aria-hidden="true"  &times;
+        p#myModalLabel.modal-title Confirm Deletion
+      .modal-body
+        .sub-num-container
+          p.num-header-text Are you sure you want to delete this song from playlist?
+          button.btn-default.btn.delete-song-confirmation Yes
+          button.btn-default.btn.delete-song-negation No
+
+#confirmPlaylistDeletionModal.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1" 
+  .modal-dialog role="document" 
+    .modal-content
+      .modal-header
+        button.close aria-label="Close" data-dismiss="modal" type="button" 
+          span aria-hidden="true"  &times;
+        p#myModalLabel.modal-title Confirm Deletion
+      .modal-body
+        .sub-num-container
+          p.num-header-text Are you sure you want to delete this playlist?
+          button.btn-default.btn.delete-playlist-confirmation Yes
+          button.btn-default.btn.delete-playlist-negation No
+					
+javascript:
+
+	var playlistId,
+		songId,
+		dataToSend,
+		songElToDelete;
+
+	$('.delete-song-confirmation').click(function(e) {
+
+		e.preventDefault;
+
+		var currenyPlaylistEl = songElToDelete.parent();
+		var currentSongElSlength = songElToDelete.siblings().length;
+		
+		$('#confirmSongDeletionModal').modal('hide');
+
+		bp_ajax({
+
+			action: 'delete_song',
+			method: 'get',
+			data: dataToSend,
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+				songElToDelete.remove();
+				if (currentSongElSlength == 1) {
+					currenyPlaylistEl.append('<p class="empty-playlist"> No audio file exist in the playlist </p>');
+				}
+			}
+
+		});
+
+	});
+
+	$('.delete-song-negation').click(function(e) {
+
+		e.preventDefault;
+
+		$('#confirmSongDeletionModal').modal('hide');
+
+	});
+
+	$(document.body).on('click', '.delete-song-action' ,function(e){
+
+		e.preventDefault;
+
+		playlistId = $(this).parent().parent().parent().siblings('.p-title').children('input[name="playlist-id"]').val();
+		songId = $(this).parent().parent().siblings('input[name="song-id"]').val();
+		dataToSend = { playlist_id: playlistId, song_id: songId };
+
+		songElToDelete = $(this).parent().parent().parent();
+
+		//$('.playlist-details input[name="playlist-id"]').val(playlistId).parent().remove();
+		$('#confirmSongDeletionModal').modal('show');
+
+		
+
+    });
+
+    var playlistDeleteDataToSend,
+    	playlistIdTwo;
+
+    function deletePlaylistCall() {
+    	
+    	$('.playlist-details input.playlist-id').each(function(e) {
+
+			if ($(this).val() == playlistIdTwo) {
+
+				$(this).parent().remove();
+			}
+
+		});
+
+    	bp_ajax({
+
+			action: 'delete_playlist',
+			method: 'get',
+			data: playlistDeleteDataToSend,
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				playlistElToDelete.remove();
+
+				if ($('.playlist-content').length < 1) {
+					$('.music-playlist-section').append('<p class="empty-playlist"> No playlist exist </p>');
+				}
+
+			}
+
+		});
+    }
+
+    $('.delete-playlist-confirmation').click(function(e) {
+
+    	e.preventDefault();
+
+    	$('#confirmPlaylistDeletionModal').modal('hide');
+
+    	deletePlaylistCall();
+
+    });
+
+    $('.delete-playlist-negation').click(function(e) {
+
+    	e.preventDefault();
+
+    	$('#confirmPlaylistDeletionModal').modal('hide');
+
+    });
+
+    var playlistElToDelete;
+
+    $(document.body).on('click', '.delete-playlist-action', function(e) {
+
+		e.preventDefault;
+
+		playlistIdTwo = $(this).siblings('input[name="playlist-id"]').val();
+		playlistDeleteDataToSend = { id: playlistIdTwo };
+
+		playlistElToDelete = $(this).parent().parent();
+
+		$('#confirmPlaylistDeletionModal').modal('show');
+
+    });
+
+	
+
+	function getPlaylistSongs (playlistId, counterDiv) {
+
+		var dataToSend = { id: playlistId };
+		var dyPartOne = '<div class="recommended-thumb-wrapper">';
+		var dyPartTwo = '<div class="recommended-content-wrapper">';
+		var dyPartMain = '<div class="col-md-12 col-sm-12 col-xs-12">';
+		var endLineEl = '<div class="clearfix"></div><div class="recommended-border-line"></div>';
+
+		bp_ajax({
+
+		    action: 'playlist_songs',
+		    method: 'get',
+		    data: dataToSend,
+		    contentType: 'application/json',
+		    notifications: false,
+		    spinner: true,
+		    callback: function(data) {
+
+		    	if (data['data']['data'].length < 1 ) {
+		    		$('#' + counterDiv + 'p').append('<p class="empty-playlist"> No audio file exist in the playlist </p>');
+		    	}
+
+				if (data['data']['data'].length) {
+
+				    for (var j=0; j<data['data']['data'].length; j++) {
+
+						var songId = '<input type="hidden" value=' + data["data"]["data"][j]["id"] + ' name="song-id">';
+						var mp3Url = '<input type="hidden" value=' + data["data"]["data"][j]['mp3_url'] + ' name="mp3-url">';
+
+						var imgEl = '<img class="img-responsive" src=' + data["data"]["data"][j]["thumb_url"] + '></img>';
+						var rContent = '<div class="recommended-content"><p>' + data["data"]['data'][j]["title"] + '</p><i class="delete-song-action fa fa-trash"></i></div>';
+
+						var htmlRowEl = dyPartMain + songId + mp3Url + dyPartOne + imgEl + '</div>' + dyPartTwo + rContent + '</div>' + endLineEl;
+
+						$('#' + counterDiv + 'p').append(htmlRowEl);                           
+
+				    }
+
+				}
+		    
+		    }
+
+		});
+	}
+
+	var playlistId = 0,
+        counterDiv = 0,
+        outerDiv,
+        titleDiv,
+        innerContentDiv,
+        htmlRow;
+
+    function editPlaylistPageCalls() {
+
+    	
+
+        bp_ajax({
+
+			action: 'get_user_playlists',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				if (data['success'] == false) {
+		      		$('.hp-first-loader').addClass('v-hide');
+		      		$('.slow-or-no-internet').removeClass('v-hide');
+		      		return;
+		      	}
+				$('.hp-first-loader').addClass('v-hide');
+
+				if (data['data']['data'].length < 1) {
+					$('.music-playlist-section').append('<p class="empty-playlist"> No playlist exist </p>');
+				}
+
+			    for (var i=0; i<data['data']['data'].length; i++) {
+
+					outerDiv = '<div class="playlist-content" id="' + i + 'p' + '">';
+					titleDiv = '<div class="p-title">';
+					innerContentDiv = '<p>' + data['data']['data'][i]['name'] + '</p>' + '<i class="fa fa-trash delete-playlist-action pull-right"></i> <input type="hidden" name="playlist-id" value="' + data['data']['data'][i]['id'] + '">';
+
+					htmlRow = outerDiv + titleDiv + innerContentDiv + '</div></div>';
+					$('.music-playlist-section').append(htmlRow);
+
+					playlistId = data['data']['data'][i]['id'];
+
+					getPlaylistSongs(playlistId, counterDiv);
+					counterDiv++;
+
+			    }
+			    
+
+			}
+
+        });
+
+    }
+
+	$(window).load(function() {
+
+		setTimeout(function() {
+
+            if (!$('.hp-first-loader').hasClass('v-hide')) {
+                  $('.hp-first-loader').addClass('v-hide');
+                  $('.slow-or-no-internet').removeClass('v-hide');
+                  $('.kh-main-content').addClass('v-hide');
+                  return;
+            }
+
+      	}, 15000);
+
+		$('.playlists-menu').addClass('active-menu-link').siblings().removeClass('active-menu-link');
+
+		editPlaylistPageCalls();
+
+	});
+			
+

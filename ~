@@ -1,0 +1,22 @@
+upstream unicorn_vbv2 {
+  server unix:/tmp/unicorn.app.sock fail_timeout=0;
+}
+
+server {
+  listen 80;
+  server_name  46.234.109.115, zain.vbox.pk, vbox.mobi;
+
+  root /home/vod_portal/deployments/vbox_portal_v2_staging/public;
+  try_files $uri/index.html $uri @unicorn_vbv2;
+
+  location @unicorn_vbv2 {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header HOST $http_host;
+    proxy_redirect off;
+    proxy_pass http://localhost:8085;
+  }
+
+  error_page 500 502 503 504 /500.html;
+  client_max_body_size 10M;
+  keepalive_timeout 5;
+}

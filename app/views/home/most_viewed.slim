@@ -1,0 +1,169 @@
+#pjax-container
+
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content.no-padding-right.most-viewed-page
+			.more-most-viewed.most-viewed.col-md-12.col-sm-12.col-xs-12.no-padding-left.no-padding-right
+				h3.no-margin-bottom Your Most Viewed Videos
+				- i = 0
+				.category-main-inner-container
+					- while i < 24
+						- i += 1
+						.col-md-2.col-sm-3.col-xs-6.no-padding
+							.video-block.most-viewed-page-block
+								= render "static_video_block"
+				.clearfix
+				.load-more-wrapper.most-viewed-load-more-wrapper.no-display
+					button.load-more-btn.most-background.most-viewed-load-more-btn Load More
+
+javascript:
+
+	$('.video-block').each(function(i) {
+			
+		var topOfObject = $(this).offset().top,
+			bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+		if (bottomOfWindow > topOfObject) {
+			$(this).animate({'opacity': '1'}, 500);
+		}
+
+	});
+    $('.featured-video-block').each(function(i) {
+                    
+        var topOfObject = $(this).offset().top,
+              bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+        if (bottomOfWindow > topOfObject) {
+              $(this).animate({'opacity': '1'}, 500);
+        }
+
+    });
+
+	$(window).scroll(function() {
+		$('.video-block').each(function(i) {
+			
+			var topOfObject = $(this).offset().top,
+				bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+				$(this).animate({'opacity': '1'}, 500);
+			}
+
+		});
+        $('.featured-video-block').each(function(i) {
+                    
+			var topOfObject = $(this).offset().top,
+			    bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+			    $(this).animate({'opacity': '1'}, 500);
+			}
+
+        });
+	});
+
+	var   pageCounter = 1,
+          htmlRowEl,
+          dynamicPartOne,
+          dynamicPartTwo,
+          dynamicPartThree,
+          dynamicPartFour,
+          dynamicPartFive,
+          dynamicPartSix,
+          dynamicParts,
+          outerColDiv = '<div class="col-md-3 col-sm-3 col-xs-6 no-padding">',
+          videoBlockDiv = '<div class="video-block">',
+          titleDiv = '<div class="vblock-content-wrapper">',
+          twoClosingDivs = '</div></div>';
+
+    $('.most-viewed-load-more-btn').click(function(e) {
+
+		e.preventDefault;
+
+		pageCounter++;
+
+		var loadMoreDataToSend = { page: pageCounter, category: 'more_most_viewed' };
+		var rowInitial = outerColDiv + videoBlockDiv;
+
+		bp_ajax({
+
+		    action: 'more_results',
+		    method: 'get',
+		    contentType: 'application/json',
+		    data: loadMoreDataToSend,
+		    notifications: false,
+		    spinner: true,
+		    callback: function(data) {
+
+				if (data['data']['current_page'] == data['data']['total_pages']) {
+				    $('.most-viewed-load-more-btn').hide();
+				}
+
+				for (var i=0; i< data['data']['data'].length; i++) {
+
+				    dynamicPartOne = '<img class="img-responsive video-thumbnail" src=' + data['data']['data'][i]['thumb_url'] + '></img>';
+				    dynamicPartThree = '<a class="video-play-link" href="/video?id=' + data['data']['data'][i]['id'] + '"> <img src="play.png"></img> </a>';
+				    dynamicPartFour = '<p>' + data['data'][i]['title'] + '</p>';
+				    dynamicPartFive = '<span>' + data['data']['data'][i]['views'] + ' views </span>';
+				    dynamicPartSix = '<div class="clearfix"></div> <span class="flaticon-clock96">' + data['data']['data'][i]['duration'] + '</span>';
+
+				    dynamicPartsOne = dynamicPartThree;
+				    dynamicPartsTwo = titleDiv + dynamicPartFour + dynamicPartFive + dynamicPartSix;                      
+
+				    htmlRowEl = rowInitial + dynamicPartOne + dynamicPartsOne + dynamicPartsTwo + twoClosingDivs;
+
+				    $('.category-main-inner-container').append(htmlRowEl);
+
+				}
+
+				$('.video-block').each(function(i) {
+			
+					var topOfObject = $(this).offset().top,
+						bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+					if (bottomOfWindow > topOfObject) {
+						$(this).animate({'opacity': '1'}, 500);
+					}
+
+				});
+
+		    }   
+
+		});
+
+    });
+
+		
+	$(window).load(function() {
+
+		bp_ajax({
+	        
+			action: 'most_viewed_page',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+			    if (data['data']['total_pages'] == 1) {
+			          $('.most-viewed-load-more-btn').hide();
+			    }
+
+			    $('.most-viewed-page-block').each(function(i, obj) {
+
+					if (data['data']['data'][i]) {
+
+					    $(this).find("a").attr("href", "/video?id=" + data['data']['data'][i]['id']);
+					    $(this).find("img.video-thumbnail").attr("src", data['data']['data'][i]['thumb_url']);
+					    $(this).find("p").text(data['data']['data'][i]['title']);
+					    $(this).find("span.view-count").text(data['data']['data'][i]['views'] + " views");
+					    $(this).find("span.duration").addClass("flaticon-clock96").text(data['data']['data'][i]['duration']);
+
+					}
+
+			    });
+
+			}
+
+		});
+	});
+

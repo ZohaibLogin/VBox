@@ -1,0 +1,15 @@
+.slow-or-no-internet.v-hide
+    p Slow or no internet connection
+    a.reload-link Reload
+.hp-first-loader.loader
+    img src="loader_spiffy.gif"
+
+javascript:
+
+	$('.reload-link').click(function(e) {
+
+		e.preventDefault();
+
+		location.reload();
+
+	});

@@ -1,0 +1,17 @@
+#pjax-container
+
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content.songs-main-content.full-min-height
+			span.v-homepage-heading.v-green-word.v-heading-indent.v-title-first-word Music 
+			span.v-homepage-heading.v-title-second-word Trends
+			.vs-wrapper
+
+javascript: 
+
+	$(window).load(function(e) {
+
+		e.preventDefault;
+
+		album_page_call('music_trends');
+
+	});

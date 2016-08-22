@@ -1,0 +1,261 @@
+#pjax-container
+	= render 'loader_and_no_internet'
+
+	.container-fluid.main-inner-container.no-padding-left
+		.kh-main-content.v-first-videopage-block.first.row.videopage-first-section
+			a.v-heading-link.ajax-link href="/bollywood"
+				span.v-homepage-heading.v-title-first-word 
+				span.pull-right.v-see-all.v-hide See All
+			.main-section.row.no-margin.owl-carousel
+				- i=0
+				- while i<18
+					.video-block.v-hide
+						= render "static_video_block"
+					- i = i+1
+
+		.kh-main-content.row.videopage-third-section
+			a.v-heading-link.ajax-link href="/movies"
+				span.v-homepage-heading.v-title-first-word 
+				span.pull-right.v-see-all.v-hide See All
+			.main-section.row.no-margin.owl-carousel
+				- i=0
+				- while i<18
+					.video-block.v-hide
+						= render "static_video_block"
+					- i = i+1
+
+		.kh-main-content.row.videopage-second-section
+			a.v-heading-link.ajax-link href="/drama"
+				span.v-homepage-heading.v-title-first-word 
+				span.pull-right.v-see-all.v-hide See All
+			.main-section.row.no-margin.owl-carousel
+				- i=0
+				- while i<18
+					.video-block.v-hide
+						= render "static_video_block"
+					- i = i+1
+
+		.kh-main-content.row.videopage-fourth-section
+			a.v-heading-link.ajax-link href="/comedy"
+				span.v-homepage-heading.v-title-first-word 
+				span.pull-right.v-see-all.v-hide See All
+			.main-section.row.no-margin.owl-carousel
+				- i=0
+				- while i<18
+					.video-block.v-hide
+						= render "static_video_block"
+					- i = i+1
+
+		.kh-main-content.row.videopage-fifth-section
+			a.v-heading-link.ajax-link href="/fashion"
+				span.v-homepage-heading.v-title-first-word
+				span.pull-right.v-see-all.v-hide See All
+			.main-section.row.no-margin.owl-carousel
+				- i=0
+				- while i<18
+					.video-block.v-hide
+						= render "static_video_block"
+					- i = i+1	
+
+
+javascript:
+
+	$('.main-section').hover(function(e) {
+
+		e.preventDefault;
+
+			$(this).find('.owl-controls .owl-buttons .owl-next').addClass('scale-next-caret');
+			$(this).find('.owl-controls .owl-buttons .owl-prev').addClass('v-show').addClass('scale-prev-caret');
+		}, function(e) {
+			
+			e.preventDefault;
+
+			$(this).find('.owl-controls .owl-buttons .owl-next').removeClass('scale-next-caret');
+			$(this).find('.owl-controls .owl-buttons .owl-prev').removeClass('v-show').removeClass('scale-prev-caret');
+
+	});
+
+	$('.main-section.owl-carousel').owlCarousel({
+	  navigation : true,
+	  pagination: false,
+      items : 6, //10 items above 1000px browser width
+      itemsDesktop : [1000,6], //5 items between 1000px and 901px
+      itemsDesktopSmall : [900,4], // betweem 900px and 601px
+      itemsTablet: [600,2], //2 items between 600 and 0
+      itemsMobile : false // itemsMobile disabled - inherit from itemsTablet option
+	});
+
+	function videosPageAjaxCalls() {
+
+		var htmlRow;
+
+		bp_ajax({
+
+		      action: 'bollywood_latest',
+		      method: 'get',
+		      contentType: 'application/json',
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	if (data['success'] == false) {
+		      		$('.hp-first-loader').addClass('v-hide');
+		      		$('.slow-or-no-internet').removeClass('v-hide');
+		      		return;
+		      	}
+
+		      	$('.hp-first-loader').addClass('v-hide');
+
+		      	$('.videopage-first-section .v-title-first-word').text(data['data']['category_name']);
+
+		      	$('.videopage-first-section .main-section .video-block').each(function(i, obj) {
+
+		      		$(this).removeClass('v-hide');
+
+		      		$(this).find('img.video-thumbnail').attr("src", data['data']['data'][i]['thumb_medium']);
+		      		$(this).find('.vblock-content-wrapper a').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+		      		$(this).find('p').text(data['data']['data'][i]['title']);
+		      		$(this).find('span.view-count').text(data['data']['data'][i]['views'] + " views");
+		      		$(this).find('span.duration').text(data['data']['data'][i]['duration'].substring(3));
+		      		$(this).find('a.video-play-link').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+
+		      	});
+		            
+		   	}
+
+		});
+
+		bp_ajax({
+
+		      action: 'movies_latest',
+		      method: 'get',
+		      contentType: 'application/json',
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	$('.videopage-third-section .v-title-first-word').text(data['data']['category_name']);
+
+		      	$('.videopage-third-section .main-section .video-block').each(function(i, obj) {
+
+		      		$(this).removeClass('v-hide');
+
+		      		$(this).find('img.video-thumbnail').attr("src", data['data']['data'][i]['thumb_medium']);
+		      		$(this).find('.vblock-content-wrapper a').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+		      		$(this).find('p').text(data['data']['data'][i]['title']);
+		      		$(this).find('span.view-count').text(data['data']['data'][i]['views'] + " views");
+		      		$(this).find('span.duration').text(data['data']['data'][i]['duration'].substring(3));
+		      		$(this).find('a.video-play-link').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+
+		      	});
+		   	}
+
+		});   
+
+
+		bp_ajax({
+
+		      action: 'drama_latest',
+		      method: 'get',
+		      contentType: 'application/json',
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	$('.videopage-second-section .v-title-first-word').text(data['data']['category_name']);
+
+		      	$('.videopage-second-section .main-section .video-block').each(function(i, obj) {
+
+		      		$(this).removeClass('v-hide');
+
+		      		$(this).find('img.video-thumbnail').attr("src", data['data']['data'][i]['thumb_medium']);
+		      		$(this).find('.vblock-content-wrapper a').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+		      		$(this).find('p').text(data['data']['data'][i]['title']);
+		      		$(this).find('span.view-count').text(data['data']['data'][i]['views'] + " views");
+		      		$(this).find('span.duration').text(data['data']['data'][i]['duration'].substring(3));
+		      		$(this).find('a.video-play-link').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+
+		      	});
+
+		   	}
+
+		});
+
+		bp_ajax({
+
+		      action: 'comedy_latest',
+		      method: 'get',
+		      contentType: 'application/json',
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	$('.videopage-fourth-section .v-title-first-word').text(data['data']['category_name']);
+
+		      	$('.videopage-fourth-section .main-section .video-block').each(function(i, obj) {
+
+		      		$(this).removeClass('v-hide');
+
+		      		$(this).find('img.video-thumbnail').attr("src", data['data']['data'][i]['thumb_medium']);
+		      		$(this).find('.vblock-content-wrapper a').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+		      		$(this).find('p').text(data['data']['data'][i]['title']);
+		      		$(this).find('span.view-count').text(data['data']['data'][i]['views'] + " views");
+		      		$(this).find('span.duration').text(data['data']['data'][i]['duration'].substring(3));
+		      		$(this).find('a.video-play-link').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+
+		      	});
+		   	}
+
+		});   
+
+		bp_ajax({
+
+		      action: 'fashion_latest',
+		      method: 'get',
+		      contentType: 'application/json',
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	$('.v-see-all').removeClass('v-hide');
+
+		      	$('.owl-controls').addClass('v-show');
+
+		      	$('.videopage-fifth-section .v-title-first-word').text(data['data']['category_name']);
+
+		      	$('.videopage-fifth-section .main-section .video-block').each(function(i, obj) {
+
+		      		$(this).removeClass('v-hide');
+
+		      		$(this).find('img.video-thumbnail').attr("src", data['data']['data'][i]['thumb_medium']);
+		      		$(this).find('.vblock-content-wrapper a').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+		      		$(this).find('p').text(data['data']['data'][i]['title']);
+		      		$(this).find('span.view-count').text(data['data']['data'][i]['views'] + " views");
+		      		$(this).find('span.duration').text(data['data']['data'][i]['duration'].substring(3));
+		      		$(this).find('a.video-play-link').attr("href", '/video?id=' + data['data']['data'][i]['id']);
+
+		      	});
+		   	}
+
+		});    
+
+	}
+
+	$(window).load(function() {
+
+		setTimeout(function() {
+
+            if (!$('.hp-first-loader').hasClass('v-hide')) {
+                  $('.hp-first-loader').addClass('v-hide');
+                  $('.slow-or-no-internet').removeClass('v-hide');
+                  $('.kh-main-content').addClass('v-hide');
+                  return;
+            }
+
+      	}, 15000);
+
+		$('.videos-menu').addClass('active-menu-link').siblings().removeClass('active-menu-link');
+
+		videosPageAjaxCalls();
+
+	});

@@ -1,0 +1,635 @@
+.container-fluid
+  .kh-header.row
+    i.fa.fa-bars.v-hide
+    a.logo-link.ajax-link href='/'
+      img.kh-logo src="logo.png"
+      p.v-tagline A World of Unlimited Videos
+    a.apple-logo-link.no-display href="#"
+      img src="apple_icon.png"
+    a.playstore-logo-link.no-display href="#"
+      img src="playstore_icon.png"
+    .v-main-menu.hide-before-nine-fifty
+      .home-btn.menu-btn class=(request.original_fullpath == home_path ? 'active-menu' : '') 
+        a.ajax-link href="/"
+          button Home
+      .videos-btn.menu-btn class=(request.original_fullpath == videos_path ? 'active-menu' : '')  
+        button.vd-btn Browse
+        i.fa.fa-caret-down
+        .videos-dropdown
+          .video-categories
+            p.browse-dropdown-headings.brown-word Video Categories
+            a.ajax-link href="/bollywood" Bollywood
+            a.ajax-link href="/movies" Movies
+            a.ajax-link href="/drama" TV Drama
+            a.ajax-link href="/comedy" Comedy Drama
+            a.ajax-link href="/fashion" Fashion & Lifestyle
+          .music-categories
+            p.browse-dropdown-headings Playlists
+            a.ajax-link href="/music_trends" Music Trends
+            a.ajax-link href="/latest_music" Latest Music 
+            a.ajax-link href="/featured_artists" Featured Artists
+          .music-moods
+            p.browse-dropdown-headings Songs
+            a.ajax-link href="/mashups" Mashups
+            a.ajax-link href="/bhangra" Bhangra / Dance
+            a.ajax-link href="/sufi" Sufi
+            a.ajax-link href="/sad" Sad
+            a.ajax-link href="/romantic" Romantic
+            a.ajax-link href="/party" Party
+            a.ajax-link href="/slow" Slow
+    - if session[:phone_number] != ''
+      a.v-playlist-icon.ajax-link class=(request.original_fullpath == playlists_path ? 'active-playlists' : '') href="/playlists"
+        .playlist-action 
+        span Playlists
+      a.v-favorite-icon.ajax-link class=(request.original_fullpath == favorites_path ? 'active-favorites' : '') href="/favorites"
+        .favorite-action 
+        span Favorites
+    - else
+      a.v-playlist-icon.signin data-toggle="modal" data-target="#signInModal" title="Playlists"
+        .playlist-action 
+        span Playlists
+      a.v-favorite-icon.signin data-toggle="modal" data-target="#signInModal" title="Favorites"
+        .favorite-action 
+        span Favorites
+    - if session[:phone_number] != ''
+      .v-main-menu.language-region-menu.no-display
+        .videos-btn
+          button.vd-btn.fa.fa-language onclick="regionsDropdown();" Regions
+          i.fa.fa-caret-down
+          .videos-dropdown
+            .video-categories#regions
+              .all-region-row
+                button.all-region-btn id="all-regions" onclick="changeRegion(this.id)" All
+    .v-zain-logo
+      img src="home_logo_zain.png"
+    - if session[:phone_number] != ''
+      .v-logout-icon
+        .logout-actions
+    - else
+      .v-login-icon
+        a.signin data-toggle="modal" data-target="#signInModal" title="Login"
+          .login-actions 
+    .v-search-icon
+      .search-action
+    .v-full-searchbar.v-hide
+      input type="text" placeholder="Search videos and audios"
+      i.fa.fa-times.search-bar-close-btn
+.kh-android-bar.no-display
+  a href="https://play.google.com/store/apps/details?id=com.kh.vbox&hl=en"
+    img.playstore-btn src="playstore.png"
+    span Watch Free Videos and More...
+  i.fa.fa-times.android-bar-close-btn
+.kh-left-nav.no-display
+  ul.main-menu.no-padding-left.no-margin
+    li.home-menu
+      a.ajax-link href = '/' Home
+    li.videos-menu
+      a.ajax-link href = '/videos' Videos
+      
+    li.music-menu
+      a.ajax-link href = '/music' Music
+      
+    li.playlists-menu 
+      - if session[:phone_number] != ''
+        a.ajax-link  href="/playlists" title="Playlists"
+          .playlist-action 
+          span Playlists
+      - else
+        a.signin data-toggle="modal" data-target="#signInModal" title="Playlists"
+          .playlist-action 
+          span Playlists
+        
+    li.favorites-menu
+      - if session[:phone_number] != ''
+        a.ajax-link href="/favorites"
+          .favorite-action 
+          span Favorites
+      - else
+        a.signin data-toggle="modal" data-target="#signInModal" title="Favourites"
+          .favorite-action
+          span Favorites
+
+#signInModal.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1" 
+    .modal-dialog role="document" 
+      .modal-content.signin-modal-content
+          .modal-header
+            button.close aria-label="Close" data-dismiss="modal" type="button" 
+              span aria-hidden="true"  &times;
+          .modal-body
+            .login-container
+              .login-num-container
+                p Enter your mobile number
+                input.login-mobile-num-field.mobile-number type="text" placeholder="966xxxxxxxxx"
+              .login-pin-field
+                p Enter your pin sent through SMS
+                input.login-pin-num-field type="text" placeholder="xxxxxx"
+              .login-errors
+                .loading-msg.v-hide Loading... Please Wait!
+              .login-btn-container
+                button.btn-primary.btn.login-btn Login
+                a data-toggle="modal" data-target="#forgotPinModal" Forgot pin?
+            .login-seperator-line
+              .line
+              span OR 
+              .line
+            .sub-container
+              .sub-big-text
+                h4 Register To Get Your Own Vbox Account!
+              .sub-sm-text
+                p Watch Latest & Trending Videos, movies and a lot more! Get access to unlimited Videos and Songs.
+              .sub-btn-container 
+                button.btn.sub-now-btn data-toggle="modal" data-target="#subscribeNumberModal" title="Subscribe" Subscribe Now!
+
+#forgotPinModal.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1" 
+  .modal-dialog role="document" 
+    .modal-content
+      .modal-header
+        button.close aria-label="Close" data-dismiss="modal" type="button" 
+          span aria-hidden="true"  &times;
+        p#myModalLabel.modal-title Reset Pin
+      .modal-body
+        .sub-num-container
+          p.num-header-text Enter Your Mobile Number to reset your pin number to vbox
+          input.forgot-pin-mobile-num-field type="text" placeholder="966xxxxxxxxx"
+          .login-errors
+            .loading-msg.v-hide Loading... Please Wait!
+          button.btn-primary.btn.forgot-password Reset Pin
+
+#subscribeNumberModal.modal.fade aria-labelledby="myModalLabel" role="dialog" tabi`ndex="-1" 
+  .modal-dialog role="document" 
+    .modal-content
+      .modal-header
+        button.close aria-label="Close" data-dismiss="modal" type="button" 
+          span aria-hidden="true"  &times;
+        p#myModalLabel.modal-title Step 1 of 2
+      .modal-body
+        .sub-num-container
+          p.num-header-text Enter Your Mobile Number to Subscribe to vbox
+          input.sub-mobile-num-field type="text" placeholder="966xxxxxxxxx"
+          .login-errors
+            .loading-msg.v-hide Loading... Please Wait!
+            .login-incorrect-info.sub-incorrect-info.v-hide Incorrect Phone Number or Already subscribed
+          p Your number is safe with us, we never use your number for spamming or advertisement
+          p.urdu-text
+            آپ کا فون نمبر ہمارے پاس محفوظ رہے گا اور کسی بھی قسم کی تشہیری کاروائی کے لیے استعمال نہیں کیا جائے گا۔
+          .sub-get-pin-btn-container
+            button.btn-primary.btn.get-pin-for-sub Get Pin
+        .sub-big-pin-msg-text
+          h3 You are just one step away from great entertainment!
+      		
+#subscribePinModal.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1" 
+  .modal-dialog role="document" 
+    .modal-content
+      .modal-header
+        button.close aria-label="Close" data-dismiss="modal" type="button" 
+          span aria-hidden="true"  &times;
+        p#myModalLabel.modal-title Step 2 of 2
+      .modal-body
+        .sub-num-container
+          p.num-header-text Enter Please Enter your 6 Digit pin sent on your mobile phone
+          input.sub-pin-field type="text" placeholder="xxxxxx"
+          .login-errors
+            .loading-msg.v-hide Loading... Please Wait!
+            .login-incorrect-info.sub-incorrect-info.v-hide Incorrect Pin
+          .sub-get-pin-btn-container.sub-complete-buttons
+            button.btn-primary.btn.complete-sub-btn Complete Subscription
+            a.reset-pin Resend Pin
+        .sub-big-pin-msg-text
+          h3 Soon you will have access to a world of unlimited Videos!
+
+
+
+
+javascript:
+	
+	function setFullWidth() {
+    setTimeout(function() {
+          var mainContentEl = $('.kh-main-content');
+          mainContentEl.addClass('content-full-width');
+    }, 300);
+  }
+
+  $(document).mouseup(function (e) {
+      var container = $(".kh-left-nav");
+      var regionsDropdown = $('.language-region-menu .videos-dropdown');
+
+      if (!container.is(e.target) // if the target of the click isn't the container...
+          && container.has(e.target).length === 0) // ... nor a descendant of the container
+      {
+          container.fadeOut(500);
+      }
+
+      if (!regionsDropdown.is(e.target) // if the target of the click isn't the container...
+          && regionsDropdown.has(e.target).length === 0) // ... nor a descendant of the container
+      {
+          regionsDropdown.fadeOut(200);
+      }
+
+  });
+
+  function regionsDropdown() {
+
+    if ($('.language-region-menu .videos-dropdown').is(':visible')) {
+      $('.language-region-menu .videos-dropdown').fadeOut(200);
+    }
+    else {
+      $('.language-region-menu .videos-dropdown').fadeIn(200);
+    }
+
+  }
+
+  $('.android-bar-close-btn').click(function(e) {
+
+    e.preventDefault;
+
+    $('.kh-android-bar').addClass('no-display');
+
+  });
+
+  $('.fa-bars').click(function(e) {
+
+    e.preventDefault();
+
+    var menuBarEl = $('.fa-bars'),
+        leftNavEl = $('.kh-left-nav');
+
+    if (!leftNavEl.is(':visible')) {
+          menuBarEl.removeClass('inactive-menu');
+          leftNavEl.fadeIn(500);
+    }
+
+  });
+
+  $('.search-action').click(function(e) {
+
+    e.preventDefault();
+
+    $('.v-full-searchbar').removeClass('v-hide');
+
+  });
+
+  $('.v-full-searchbar i.fa-times').click(function(e) {
+
+    e.preventDefault();
+
+    $('.v-full-searchbar').addClass('v-hide');
+
+  });
+
+
+
+	$('.logout-actions').click(function(e) {
+
+      e.preventDefault;
+
+      bp_ajax({
+
+            action: 'logout',
+            method: 'get',
+            contentType: 'application/json',
+            notifications: false,
+            spinner: true,
+            callback: function(data) {
+                  $.notify("Logging out!!", "success");
+                  setTimeout(function() {
+
+                    location.reload();
+
+                  }, 1000);
+                  
+            }
+
+      });
+
+  });
+
+    $('.forgot-password').click(function(e) {
+
+      e.preventDefault();
+
+      var phoneNumber = $('.forgot-pin-mobile-num-field').val();
+      var dataToSend = { phone_number: phoneNumber };
+
+      bp_ajax({
+
+        action: 'forgot_password',
+        method: 'get',
+        data: dataToSend,
+        contentType: 'application/json',
+        notifications: false,
+        spinner: true,
+        callback: function(data) {
+          
+          if (data['data']['status'] == 0) {
+            $.notify("Provide correct number to reset pin!");
+          }
+          else {
+            $.notify("Pin number is sent through SMS!", "success");
+            $('#forgotPinModal').modal('hide');
+
+          }
+        
+        }
+
+      });
+
+    });
+
+    $('.reset-pin').click(function(e) {
+
+      e.preventDefault();
+
+      bp_ajax({
+
+        action: 'reset_pin',
+        method: 'get',
+        contentType: 'application/json',
+        notifications: false,
+        spinner: true,
+        callback: function(data) {
+          if (data['data']['data']['status'] == 0) {
+            $.notify("Provide correct number to reset pin!");
+          }
+          else {
+            $.notify("Pin number is sent through SMS!", "success");
+          }
+        }
+
+      });
+
+    });
+
+      $('.complete-sub-btn').click(function(e) {
+
+            e.preventDefault;
+
+            var pinNumber = $('input.sub-pin-field').val();
+            var responsePinNumber;
+            var dataToSend = { pin_number: pinNumber };
+
+            $('.loading-msg').removeClass('v-hide');
+
+            bp_ajax({
+
+              action: 'subscription',
+              method: 'get',
+              data: dataToSend,
+              contentType: 'application/json',
+              notifications: false,
+              spinner: true,
+              callback: function(data) {
+
+                $('.loading-msg').addClass('v-hide');
+
+                if (data['data']['ResponseCode'] != "E1010") {
+                  $('#subscribePinModal').modal('hide');
+                  location.reload();
+                }
+
+                else {
+                  $('.sub-incorrect-info').removeClass('v-hide');
+                }
+              
+              }
+
+            });
+
+      });
+
+      $('input[name="verify-pin-field"]').keyup(function(e) {
+
+        e.preventDefault;
+
+        if (e.keyCode == 13) {
+
+            $('.next-link-pin-verify').click();
+
+        }
+
+      });
+
+      $('input[name="sub-verify-pin-field"]').keyup(function(e) {
+
+        e.preventDefault;
+
+        if (e.keyCode == 13) {
+
+            $('.subscribe-pin-verify').click();
+
+        }
+
+      });
+
+      $('input.login-mobile-num-field').keyup(function(e) {
+
+        e.preventDefault;
+
+        if (e.keyCode == 13) {
+
+            $('.login-btn').click();
+
+        }
+
+      });
+      $('input.login-pin-num-field').keyup(function(e) {
+
+        e.preventDefault;
+
+        if (e.keyCode == 13) {
+
+            $('.login-btn').click();
+
+        }
+
+      });
+
+      $('.sub-now-btn').click(function(e) {
+
+        e.preventDefault;
+
+        $('#signInModal').modal('hide');
+
+      });
+
+      $('.login-btn').click(function(e) {
+
+            e.preventDefault;
+
+            var phoneNumber = $('input.login-mobile-num-field').val();
+            var pinNumber = $('input.login-pin-num-field').val();
+            var dataToSend = { phone_number: phoneNumber, pin_number: pinNumber };
+
+            if (phoneNumber == '' && pinNumber == '') {
+              $.notify("Fill in the Mobile Number and Pin Number fields!");
+              return;
+            }
+            if (phoneNumber == '') {
+              $.notify("Fill in the Mobile Number field!");
+              return;
+            }
+            if (pinNumber == '') {
+              $.notify("Fill in the Pin Number field!");
+              return;
+            }
+            $('.loading-msg').removeClass('v-hide');
+            if (phoneNumber == "kh1234test") {
+              
+              bp_ajax({
+                action: 'test_login',
+                method: 'get',
+                contentType: 'application/json',
+                notifications: false,
+                spinner: true,
+                callback: function(data) {
+
+                  $('#signInModal').modal('hide');
+                  location.reload();
+
+                }
+
+              });
+            
+            } 
+
+            else {
+
+              bp_ajax({
+
+              action: 'login',
+              method: 'get',
+              data: dataToSend,
+              contentType: 'application/json',
+              notifications: false,
+              spinner: true,
+              callback: function(data) {
+
+                $('.loading-msg').addClass('v-hide');
+
+                if (data['data']['status'] == 0) {
+                  $.notify("Incorrect Phone Number or Pin Number!");
+                }
+                else {
+                  location.reload();
+                }
+
+              }
+
+            });
+          }
+
+
+      });
+
+      $('.get-pin-for-sub').click(function(e) {
+
+            e.preventDefault;
+
+            $('.loading-msg').removeClass('v-hide');
+
+            var phoneNumber = $('input.sub-mobile-num-field').val();
+            var dataToSend = { phone_number: phoneNumber };
+            if (phoneNumber == '') {
+              $.notify('Fill in the number field!');
+            }
+            bp_ajax({
+
+            action: 'send_pin',
+            method: 'get',
+            data: dataToSend,
+            contentType: 'application/json',
+            notifications: false,
+            spinner: true,
+            callback: function(data) {
+
+              $('.loading-msg').addClass('v-hide');
+
+              if (data['data'][0] == true && data['data'][1] != "Active") {
+
+                $.notify("Pin Code Sent!", "success");
+
+                $('#subscribeNumberModal').modal('hide');
+
+                $('#subscribePinModal').modal('show');
+
+              }
+              if (data['data'][0] == false) {
+
+                $.notify('Provide correct zain number!');
+
+              }
+
+              if (data['data'][1] == "Active") {
+
+                $.notify('You are already subscribed!');
+
+              }
+            
+            }
+
+          });
+
+
+      });
+
+      // Search
+
+      $('i.search-icon').click(function(e){
+
+        e.preventDefault();
+
+        var searchQueryEl = $('.search-container input.search-query-action').val(),
+            searchDataToSend;
+
+            //searchQueryEl = searchQueryEl.replace(/\s+/g, '%20');
+
+            //$.pjax({url: '/search?query=' + searchQueryEl, container: '#pjax-container' });
+            if (searchQueryEl != "") {
+
+              window.location.href = '/search?query=' + searchQueryEl;
+
+            }
+      });
+
+      $('.search-container input.search-query-action').keyup(function(e) {
+
+            e.preventDefault();
+
+            if (e.keyCode == 13) {
+                  var searchQueryEl = $('.search-container input.search-query-action').val(),
+                        searchDataToSend;
+
+                  //searchQueryEl = searchQueryEl.replace(/\s+/g, '%20');
+
+                  //$.pjax({url: '/search?query=' + searchQueryEl, container: '#pjax-container' });
+                  if (searchQueryEl != "") {
+                    window.location.href = '/search?query=' + searchQueryEl;
+                  }
+            
+            }
+
+      });
+
+      $('.v-full-searchbar input').keyup(function(e) {
+
+            e.preventDefault();
+
+            if (e.keyCode == 13) {
+                  var searchQueryEl = $('.v-full-searchbar input').val(),
+                        searchDataToSend;
+
+                  //searchQueryEl = searchQueryEl.replace(/\s+/g, '%20');
+
+                  //$.pjax({url: '/search?query=' + searchQueryEl, container: '#pjax-container' });
+                  if (searchQueryEl != "") {
+                    $.pjax({url: '/search?query=' + searchQueryEl, container: '#pjax-container' });
+                  }
+
+            }
+
+      });
+
+      $('#signInModal').on('hidden.bs.modal', function () {
+          $('.login-incorrect-info').addClass('v-hide');
+          $('.login-mobile-num-field').val("");
+          $('.login-pin-num-field').val("");
+      });

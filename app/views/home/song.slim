@@ -1,0 +1,369 @@
+.container-fluid
+	.row.kh-main-content
+		input.add-song-id type="hidden" value="" 
+		.category-main-section.music-play-info-container.col-md-9.col-sm-9.col-xs-12.no-padding
+			h3.no-margin-bottom Music Play / Now Playing
+			.music-play-content.col-md-12.col-sm-12.col-xs-12.no-padding
+				.thumb-wrapper.col-md-3.col-sm-3.col-xs-3.no-padding
+					img.img-responsive src=@response['thumb_url']
+					img.v-icon.img-responsive src="play_icon.png"
+				.info-wrapper.col-md-9.col-sm-9.col-xs-9.no-padding
+					.info-block
+						p = @response['title']
+						span.static Composer:
+						span.dynamic = @response['composer']
+						br
+						span.static Released:
+						span.dynamic = @response['release_date']
+						br
+						span.static Version:
+						span.dynamic = @response['version']
+			.music-recommended-section.col-md-12.col-sm-12.col-xs-12.no-padding
+				h2.no-margin Related / Recommended
+				- @response['related'].each do |res|
+					.col-md-1.col-sm-1.col-xs-2.recommended-thumb-wrapper
+						.hovereffect
+							a href="/song?id=#{res['id']}"
+								img.img-responsive src=res['thumb_url']
+					.col-md-11.col-sm-11.col-xs-10.no-padding
+						input type="hidden" value=res['id'] name="recommended-song-id"
+						.recommended-content
+							p = res['title']
+							i.fa.fa-plus-circle.song-to-add data-toggle="modal" data-target="#myModal"
+					.clearfix
+					.recommended-border-line
+		.category-sub-section.music-sub-section-color.col-md-3.col-sm-3.col-xs-12.no-padding
+			h3.no-margin-bottom Recently Played
+			.featured-section.music-background
+				- i = 0
+				- @recently_played_data_size = 20
+				- while i < @recently_played_data_size
+					- i += 1
+					.featured-video-block
+						= render "static_recently_viewed_block"
+			.clearfix
+			.load-more-wrapper-sm.music-background
+				button.load-more-btn-sm.music-light-background Load More
+		#myModal.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1" 
+		    .modal-dialog role="document" 
+		    	.modal-content
+		        	.modal-header
+		        		button.close aria-label="Close" data-dismiss="modal" type="button" 
+		        			span aria-hidden="true"  &times;
+		        		h4#myModalLabel.modal-title Select Playlist
+		    		.modal-body
+		        		input type="text" name="new-playlist-name" placeholder="Create new ..."
+		        		.error-message.v-hide
+		        			p Song already exist
+
+		    		
+
+
+javascript: 
+
+	$(document).ready(function() {
+
+		$('audio').mediaelementplayer({
+			features: ['playpause', 'progress', 'current', 'duration', 'fullscreen', 'autotranslation']
+		});
+
+		$('.featured-video-block').each(function(i) {
+				
+			var topOfObject = $(this).offset().top,
+				bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+				$(this).animate({'opacity': '1'}, 1000);
+			}
+
+		});
+
+		$(window).scroll(function() {
+			
+			$('.featured-video-block').each(function(i) {
+				
+				var topOfObject = $(this).offset().top,
+					bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+				if (bottomOfWindow > topOfObject) {
+					$(this).animate({'opacity': '1'}, 1000);
+				}
+
+			});
+		
+		});
+
+		$(document.body).on('click', '.add-song-to-playlist' ,function(e){
+
+			e.preventDefault;
+
+			var songId = $('input.add-song-id').val();
+			var playlistId = $(this).siblings('input.playlist-id').val();
+
+			var dataToSend = { song_id: songId, playlist_id: playlistId };
+
+			bp_ajax({
+	  
+		      action: 'add_song_to_playlist',
+		      method: 'get',
+		      data: dataToSend,
+		      contentType: 'application/json',
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	if (data['data']['result'] == 'Song is already in users playlist.') {
+		      		$('.error-message').removeClass('v-hide');	
+		      	}
+		      	else {
+		      		$('.modal-header button.close').click();
+		      	} 
+			  	
+		   	  }
+
+	  	    });
+
+	  	    $('.error-message').addClass('v-hide');
+
+		});
+
+		$('.song-to-add').click(function(e) {
+			
+			e.preventDefault;
+
+			var songId = $(this).parent().siblings('input[name="recommended-song-id"]').val();
+
+			$('input.add-song-id').attr("value", songId);
+		
+		});
+
+		$('input[name="new-playlist-name"]').keyup(function(e) {
+
+			if (e.keyCode == 13) {
+
+				var playlistName = $(this).val();
+				var dataToSend = { name: playlistName };
+
+				bp_ajax({
+  
+			      action: 'create_playlist',
+			      method: 'get',
+			      data: dataToSend,
+			      contentType: 'application/json',
+			      notifications: false,
+			      spinner: true,
+			      callback: function(data) {
+
+			      	pName = '<p class="playlist-name">' + data['data']['name'] + '</p>';
+
+		      		pAddBtn = '<i class="add-song-to-playlist fa fa-plus-circle"></i>';
+
+		      		pId = '<input class="playlist-id" type="hidden" value=' + data['data']['id'] + '>'; 
+
+		      		htmlRow = '<div class="playlist-details">' + pId + pName + pAddBtn + '</div>';
+
+		      		$('.modal-body').append(htmlRow);
+			   	  
+			   	  }
+
+		  	    });
+
+		  	    $(this).val('');
+
+			} 
+			
+		});
+
+		bp_ajax({
+  
+	      action: 'list_user_playlists',
+	      method: 'get',
+	      contentType: 'application/json',
+	      notifications: false,
+	      spinner: true,
+	      callback: function(data) {
+
+	      	for (var i=0; i<data['data'].length; i++) {
+
+	      		pName = '<p class="playlist-name">' + data['data'][i]['name'] + '</p>';
+
+	      		pAddBtn = '<i class="add-song-to-playlist fa fa-plus-circle"></i>';
+
+	      		pId = '<input class="playlist-id" type="hidden" value=' + data['data'][i]['id'] + '>'; 
+
+	      		htmlRow = '<div class="playlist-details">' + pId + pName + pAddBtn + '</div>';
+
+	      		$('.playlist-modal-content .modal-body').append(htmlRow); 
+	      	
+	      	}
+	
+	   	  }
+
+  	    });
+
+		bp_ajax({
+  
+	      action: 'recently_played',
+	      method: 'get',
+	      contentType: 'application/json',
+	      notifications: false,
+	      spinner: true,
+	      callback: function(data) {
+
+	      	totalPagesElRecent = data['total_pages'];
+
+	      	$('.featured-video-block').each(function(i, obj) {
+
+	      		if (data['data'][i]) {
+	      		
+		      		$(this).find("a").attr("href", "/song?id=" + data['data'][i]['id']);
+		      		$(this).find("img").attr("src", data['data'][i]['thumb_url']);
+		      		$(this).find("p").text(data['data'][i]['title']);
+		      		$(this).find(".overlay h2").text(data['data'][i]['title']);
+		      		$(this).find("span.view-count").text(data['data'][i]['views'] + " views");
+
+		      	}
+
+	      	});
+	
+	   	  }
+
+  	    });
+
+  	    // fetching more recently played data on load more click
+
+  	    var pageCounterRecent = 1,
+			totalPagesElRecent,
+			htmlRowElRecent,
+			dynamicPartOneRecent,
+			dynamicPartTwoRecent,
+			dynamicPartThreeRecent,
+			dynamicPartFourRecent,
+			dynamicPartFiveRecent,
+			dynamicPartsOneRecent,
+			dynamicPartsTwoRecent,
+			dynamicPartsThreeRecent,
+	   	  	featuredBlockDivRecent = '<div class="featured-video-block">',
+	   	  	hovereffectDivRecent = '<div class="hovereffect">',
+	   	  	overlayDivRecent = '<div class="overlay">',
+	   	  	featuredDivRecent = '<div class="featured-content">',
+	   	  	twoClosingDivsRecent = '</div></div>';
+
+	   	if (totalPagesElRecent == 1) {
+	   		$('.load-more-btn-sm').hide();
+	   	}
+
+	   	$('.load-more-btn-sm').click(function(e) {
+
+	   		e.preventDefault;
+
+	   		pageCounterRecent++;
+
+	   		var loadMoreDataToSend = { page: pageCounterRecent, category: 'more_recent_music' };
+
+	   		if (pageCounterRecent == totalPagesElRecent) {
+				$('.load-more-btn-sm').hide();
+			}
+
+			bp_ajax({
+  
+		      action: 'more_results',
+		      method: 'get',
+		      contentType: 'application/json',
+		      data: loadMoreDataToSend,
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	for (var i=0; i< data['data'].length; i++) {
+
+		      		dynamicPartOneRecent = '<img src=' + data['data'][i]['thumb_url'] + '></img>';
+		      		dynamicPartTwoRecent = '<h2>' + data['data'][i]['title'] + '</h2>';
+		      		dynamicPartThreeRecent = '<a href="/video?id=' + data['data'][i]['id'] + '">';
+		      		dynamicPartFourRecent = '<p>' + data['data'][i]['title'] + '</p>';
+		      		dynamicPartFiveRecent = '<span>' + data['data'][i]['views'] + ' views </span>';
+
+	   	  	  		dynamicPartsOneRecent = featuredBlockDivRecent + hovereffectDivRecent + dynamicPartThreeRecent + dynamicPartOneRecent;
+	   	  	  		dynamicPartsTwoRecent = overlayDivRecent + dynamicPartTwoRecent + '</a>';	  	  		
+	   	  	  		dynamicPartsThreeRecent = featuredDivRecent + dynamicPartFourRecent + dynamicPartFiveRecent;
+
+	   	  	  		htmlRowElRecent = dynamicPartsOneRecent + dynamicPartsTwoRecent + twoClosingDivsRecent + dynamicPartsThreeRecent;
+
+	   	  	  		$('.featured-section').append(htmlRowElRecent);
+
+	   	  	  	}
+
+	   	  	  }	
+
+  	    	});
+
+	   	});// fetching more recently played data on load more click
+
+  	    var pageCounterRecent = 1,
+			totalPagesElRecent,
+			htmlRowElRecent,
+			dynamicPartOneRecent,
+			dynamicPartTwoRecent,
+			dynamicPartThreeRecent,
+			dynamicPartFourRecent,
+			dynamicPartFiveRecent,
+			dynamicPartsOneRecent,
+			dynamicPartsTwoRecent,
+			dynamicPartsThreeRecent,
+	   	  	featuredBlockDivRecent = '<div class="featured-video-block">',
+	   	  	hovereffectDivRecent = '<div class="hovereffect">',
+	   	  	overlayDivRecent = '<div class="overlay">',
+	   	  	featuredDivRecent = '<div class="featured-content">',
+	   	  	twoClosingDivsRecent = '</div></div>';
+
+	   	if (totalPagesElRecent == 1) {
+	   		$('.load-more-btn-sm').hide();
+	   	}
+
+	   	$('.load-more-btn-sm').click(function(e) {
+
+	   		e.preventDefault;
+
+	   		pageCounterRecent++;
+
+	   		var loadMoreDataToSend = { page: pageCounterRecent, category: 'more_recent_music' };
+
+	   		if (pageCounterRecent == totalPagesElRecent) {
+				$('.load-more-btn-sm').hide();
+			}
+
+			bp_ajax({
+  
+		      action: 'more_results',
+		      method: 'get',
+		      contentType: 'application/json',
+		      data: loadMoreDataToSend,
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	for (var i=0; i< data['data'].length; i++) {
+
+		      		dynamicPartOneRecent = '<img src=' + data['data'][i]['thumb_url'] + '></img>';
+		      		dynamicPartTwoRecent = '<h2>' + data['data'][i]['title'] + '</h2>';
+		      		dynamicPartThreeRecent = '<a href="/video?id=' + data['data'][i]['id'] + '">';
+		      		dynamicPartFourRecent = '<p>' + data['data'][i]['title'] + '</p>';
+		      		dynamicPartFiveRecent = '<span>' + data['data'][i]['views'] + ' views </span>';
+
+	   	  	  		dynamicPartsOneRecent = featuredBlockDivRecent + hovereffectDivRecent + dynamicPartThreeRecent + dynamicPartOneRecent;
+	   	  	  		dynamicPartsTwoRecent = overlayDivRecent + dynamicPartTwoRecent + '</a>';	  	  		
+	   	  	  		dynamicPartsThreeRecent = featuredDivRecent + dynamicPartFourRecent + dynamicPartFiveRecent;
+
+	   	  	  		htmlRowElRecent = dynamicPartsOneRecent + dynamicPartsTwoRecent + twoClosingDivsRecent + dynamicPartsThreeRecent;
+
+	   	  	  		$('.featured-section').append(htmlRowElRecent);
+
+	   	  	  	}
+
+	   	  	  }	
+
+  	    	});
+
+	   	});
+
+	});

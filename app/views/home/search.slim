@@ -1,0 +1,135 @@
+#pjax-container
+	= render 'loader_and_no_internet'
+	
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content.v-search-page
+			.category-main-section.col-md-12.col-sm-12.col-xs-12.searched-videos
+				span.v-homepage-heading.v-green-word.v-heading-indent.v-title-first-word Video 
+				span.v-homepage-heading.v-title-second-word Results
+				.searched-videos-wrapper
+			.col-md-12.col-sm-12.col-xs-12.searched-audios
+				span.v-homepage-heading.v-green-word.v-heading-indent.v-title-first-word Audio 
+				span.v-homepage-heading.v-title-second-word Results
+				.searched-audios-wrapper
+				
+		
+			
+javascript:
+
+	function getParameterByName(name) {
+
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+      
+    }
+	
+
+	function searchPageAjaxCalls() {
+
+		var searchQueryString = getParameterByName('query');
+        var searchResultsDataToSend = { query: searchQueryString };
+
+        var   htmlRowEl,
+              dynamicPartOne,
+              dynamicPartTwo,
+              dynamicPartThree,
+              dynamicPartFour,
+              dynamicPartFive,
+              dynamicPartSix,
+              dynamicParts,
+              outerColDiv = '<div class="col-md-2 col-sm-3 col-xs-6 no-padding">',
+              videoBlockDiv = '<div class="video-block">',
+              titleDiv = '<div class="vblock-content-wrapper">',
+              twoClosingDivs = '</div></div>';
+
+        var rowInitial = outerColDiv + videoBlockDiv;
+
+        bp_ajax({
+
+			action: 'search_results',
+			method: 'get',
+			contentType: 'application/json',
+			data: searchResultsDataToSend,
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				if (data['success'] == false) {
+		      		$('.hp-first-loader').addClass('v-hide');
+		      		$('.slow-or-no-internet').removeClass('v-hide');
+		      		return;
+		      	}
+
+				$('.hp-first-loader').addClass('v-hide');
+
+				$('.music-favorite-section').removeClass('v-hide');
+
+				if (data['data']['error'] == "Query string must be at least 3 char long") {
+					$('.category-main-section h3').hide();
+					$('.searched-audios h3').hide();
+					$('.category-main-section').append('<p class="empty-search"> No data found </p>');
+				}
+
+				if (data['data']['videos']['data'].length < 1) {
+					$('.category-main-section').append('<p class="empty-search"> No video results </p>');
+				}
+				if (data['data']['songs']['data'].length < 1) {
+					$('.searched-audios').append('<p class="empty-search"> No audio results </p>');
+				}
+
+			    for (var i = 0; i < data['data']['videos']['data'].length; i++) {
+
+					dynamicPartOne = '<a class="video-play-link" href="/video?id=' + data['data']['videos']['data'][i]['id'] + '"><img class="img-responsive video-thumbnail" src=' + data['data']['videos']['data'][i]['thumb_large'] + '></img> <span class="duration">' + data['data']['videos']['data'][i]['duration'].substring(3) + '</span></a>';
+					dynamicPartFour = '<p>' + data['data']['videos']['data'][i]['title'] + '</p>';
+					dynamicPartFive = '<span>' + data['data']['videos']['data'][i]['views'] + ' views </span>';
+
+					dynamicPartsTwo = titleDiv + dynamicPartFour + dynamicPartFive;                      
+
+					htmlRowEl = rowInitial + dynamicPartOne + dynamicPartsTwo + twoClosingDivs;
+
+					$('.searched-videos-wrapper').append(htmlRowEl);
+
+			    }
+
+			    for (var i = 0; i < data['data']['songs']['data'].length; i++) {
+
+					dynamicPartOne = '<a href="/music?song_id=' + data['data']['songs']['data'][i]['id'] + '"><img src=' + data['data']['songs']['data'][i]['thumb_url'] + '></img></a>';
+					dynamicPartThree = '<a href="/music?song_id=' + data['data']['songs']['data'][i]['id'] + '"><img class="searched-song-play-action song-play-action album-page-link" src="play.png"> </img></a>';
+					dynamicPartFour = '<a href="/music?song_id=' + data['data']['songs']['data'][i]['id'] + '"><p>' + data['data']['songs']['data'][i]['title'] + '</p></a>';
+					dynamicPartFive = '<span>' + data['data']['songs']['data'][i]['views'] + ' views </span>';
+					dynamicPartSix = '<div class="clearfix"></div> <span class="flaticon-clock96">' + data['data']['songs']['data'][i]['duration'] + '</span>';
+
+					dynamicPartsOne =  dynamicPartThree;
+					dynamicPartsTwo = titleDiv + dynamicPartFour + dynamicPartFive + dynamicPartSix;                      
+
+					htmlRowEl = rowInitial + dynamicPartOne + dynamicPartsOne + dynamicPartsTwo + twoClosingDivs;
+
+					$('.searched-audios-wrapper').append(htmlRowEl);
+
+			    }
+
+			}
+
+        });
+
+
+	}
+
+	$(window).load(function() {
+
+		setTimeout(function() {
+
+            if (!$('.hp-first-loader').hasClass('v-hide')) {
+                  $('.hp-first-loader').addClass('v-hide');
+                  $('.slow-or-no-internet').removeClass('v-hide');
+                  $('.kh-main-content').addClass('v-hide');
+                  return;
+            }
+
+      	}, 15000);
+
+		searchPageAjaxCalls();
+
+	});

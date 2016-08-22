@@ -1,0 +1,90 @@
+- if session[:phone_number] != ""
+	a.video-play-link href="#"
+		img.img-responsive.video-thumbnail src="placeholder.jpg"
+		span.duration
+- else
+	.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+		img.img-responsive.video-thumbnail src="placeholder.jpg"
+		span.duration
+- if session[:phone_number] != ""
+	.video-like-share-action.no-display
+		i.fa.fa-heart-o
+		.clearfix
+		i.fa.fa-share-alt 
+.vblock-content-wrapper
+	- if session[:phone_number] != ""
+		a href="#"
+			p 
+	- else 
+		.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+			p
+	span.view-count
+
+javascript:
+/*
+	function getURLParameter(url, name) {
+    	return (RegExp(name + '=' + '(.+?)(&|$)').exec(url)||[,null])[1];
+	}
+
+	$('.video-block').hover(function(e) {
+		
+		e.preventDefault();
+
+		$(this).children('.video-like-share-action').show();
+
+		},
+
+		function () {
+			$(this).children('.video-like-share-action').hide();
+		}
+	);
+
+	$('.video-block .video-like-share-action .fa-heart-o').click(function(e) {
+
+		e.preventDefault();
+
+		var url = ($(this).parent().siblings('a.video-play-link').attr('href'));
+		var videoId = getURLParameter(url, 'id');
+
+		var videoIdDataToSend = { id: videoId };
+
+		console.log($(this));
+
+		if (!($(this).hasClass('liked-video'))) {
+
+			bp_ajax({
+
+				action: 'single_video_like',
+				method: 'get',
+				contentType: 'application/json',
+				data: videoIdDataToSend,
+				notifications: false,
+				spinner: true,
+				callback: function(data) {
+				    
+				}
+
+			});
+		
+		}
+
+		if ($(this).hasClass('liked-video')) {
+
+			$(this).removeClass('liked-video');
+
+			bp_ajax({
+
+				action: 'single_video_unlike',
+				method: 'get',
+				contentType: 'application/json',
+				data: videoIdDataToSend,
+				notifications: false,
+				spinner: true,
+				callback: function(data) {
+				    
+				}
+
+			});
+		}
+
+	});

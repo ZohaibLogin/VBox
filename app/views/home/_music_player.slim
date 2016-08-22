@@ -1,0 +1,283 @@
+.container-fluid
+	.no-padding.kh-music-player.row.v-hide
+		.col-md-12.col-sm-12.col-xs-12.no-padding.music-trends
+			.music-play-section.playlist-player
+				.audio-main-container
+				.music-play-action-items
+					i.fa.fa-step-backward
+					i.fa.fa-play-circle.play-pause-action
+					i.fa.fa-step-forward
+					- if session[:phone_number] != '' 
+						i.fa.fa-plus.song-to-add data-toggle="modal" data-target="#myModal"
+					- else
+						i.fa.fa-plus.song-to-add data-toggle="modal" data-target="#signInModal"
+					i.fa.fa-share-alt.v-hide
+
+#myModal.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1" 
+    .modal-dialog role="document" 
+    	.modal-content.playlist-modal-content
+        	.modal-header
+        		button.close aria-label="Close" data-dismiss="modal" type="button" 
+        			span aria-hidden="true"  &times;
+        		h4#myModalLabel.modal-title Select Playlist
+    		.modal-body
+        		input type="text" name="new-playlist-name" placeholder="Create new ..."
+        		.error-message.v-hide
+        			p Song already exist
+
+javascript:
+
+	function song_play(id) {
+
+		var songRowId = id;
+
+		var songToPlayId = id.replace("a","");
+
+		add_song_index = songToPlayId;
+		
+		$("audio").mediaelementplayer({
+   			features: [ 'playpause', 'progress', 'current', 'duration' ],
+		    success: function (mediaElement, domObject) {
+		        mediaElement.addEventListener('ended', function (e) {
+		            
+		            var songEndedId = $('.now-playing audio').attr('id');
+		            songEndedId++;
+		            
+		            if (musicPlayerList.length <= songEndedId) {
+		            	songEndedId = 0;
+		            }
+
+		            songEndedId = songEndedId + "a";
+		            song_play(songEndedId);
+		        
+		        }, false);
+		    }
+		});
+
+		if ($('#' + songRowId).hasClass('currently-playing')) {
+
+			if ($('.play-pause-action').hasClass('fa-play-circle')) {
+				$('.play-pause-action').removeClass('fa-play-circle');
+				$('.play-pause-action').addClass('fa-pause-circle');
+			}
+			else {
+				$('.play-pause-action').removeClass('fa-pause-circle');
+				$('.play-pause-action').addClass('fa-play-circle');
+			}
+
+			if ($('#' + songRowId).hasClass('paused-state')) {
+				$('#' + songRowId).removeClass('paused-state');
+			}
+
+			else {
+				$('#' + songRowId).addClass('paused-state');
+			}
+
+			$('#' + songToPlayId).parent().siblings('.mejs-controls').children('.mejs-playpause-button')[0].click();
+			return;
+		}
+
+		$('#' + songRowId).addClass('currently-playing').siblings().removeClass('currently-playing').removeClass('paused-state');
+
+		$('.kh-music-player').removeClass('v-hide');
+
+		if ($('.play-pause-action').hasClass('fa-play-circle')) {
+			$('.play-pause-action').removeClass('fa-play-circle');
+			$('.play-pause-action').addClass('fa-pause-circle');
+		}
+
+		$('#' + songToPlayId).parent().parent().parent().parent().addClass('now-playing').removeClass('no-display');
+		$('#' + songToPlayId).parent().parent().parent().parent().siblings().removeClass('now-playing').addClass('no-display');
+		
+		var player = new MediaElementPlayer('#' + songToPlayId);
+		player.pause();
+		player.load();
+		if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+			player.setCurrentTime(0);
+		}
+		player.play();
+	}
+
+	$('.play-pause-action').click(function(e) {
+
+		e.preventDefault;
+
+		if ($(this).hasClass('fa-play-circle')) {
+			$(this).removeClass('fa-play-circle');
+			$(this).addClass('fa-pause-circle');
+			$('.currently-playing').removeClass('paused-state');
+		}
+		else {
+			$(this).removeClass('fa-pause-circle');
+			$(this).addClass('fa-play-circle');
+			$('.currently-playing').addClass('paused-state');
+		}
+
+		$('.now-playing .mejs-controls .mejs-playpause-button')[0].click();
+
+	});
+
+	$('.fa-step-forward').click(function(e) {
+
+		e.preventDefault;
+
+		if ($('.song-row').length == 1) {
+			return;
+		}
+
+		var nextSongPlayId = $('.now-playing').next().find('audio').attr('id');
+
+		if ($('.now-playing').next().length < 1) {
+			nextSongPlayId = $('.music-loading-data').first().find('audio').attr('id');
+			
+		}
+		nextSongPlayId = nextSongPlayId + "a";
+
+		$('.play-pause-action').removeClass('fa-pause-circle').addClass('fa-play-circle');
+		
+		song_play(nextSongPlayId);
+
+	});
+
+	$('.fa-step-backward').click(function(e) {
+
+		e.preventDefault;
+
+		if ($('.song-row').length == 1) {
+			return;
+		}
+
+		var nextSongPlayId = $('.now-playing').prev().find('audio').attr('id');
+
+		if ($('.now-playing').prev().length < 1) {
+			nextSongPlayId = $('.music-loading-data').last().find('audio').attr('id');
+			
+		}
+
+		nextSongPlayId = nextSongPlayId + "a";
+
+		$('.play-pause-action').removeClass('fa-pause-circle').addClass('fa-play-circle');
+		
+		song_play(nextSongPlayId);
+
+	});
+
+	var add_song_index = 0;
+
+	$(document.body).on('click', '.song-add-icon' ,function(e) {
+
+  		e.preventDefault();
+
+  		add_song_index = $(this).parent().attr('id').replace("a","");
+
+  		bp_ajax({
+
+	      action: 'check_login_status',
+	      method: 'get',
+	      contentType: 'application/json',
+	      notifications: false,
+	      spinner: true,
+	      callback: function(data) {
+
+	      	if (data['data'] == 0) {
+	      		$('#signInModal').modal('show');
+	      	}
+	      	else {
+	      		$('#myModal').modal('show');
+	      	}
+
+	      }
+
+		});
+
+  	});
+
+  	$(document.body).on('click', '.add-song-to-playlist' ,function(e){
+
+		e.preventDefault;
+
+		var songId = musicPlayerList[add_song_index];
+		var playlistId = $(this).siblings('input.playlist-id').val();
+		console.log(songId);
+		var dataToSend = { song_id: songId, playlist_id: playlistId };
+
+		bp_ajax({
+  
+	      action: 'add_song_to_playlist',
+	      method: 'get',
+	      data: dataToSend,
+	      contentType: 'application/json',
+	      notifications: false,
+	      spinner: true,
+	      callback: function(data) {
+
+	      	console.log(data);
+	      	
+	      	if (data['data']['status'] == 0) {
+	      		$('.error-message p').text('Song already exist');
+	      		$('.error-message').removeClass('v-hide');	
+	      	}
+	      	else {
+	      		$('.error-message p').text('Song Added');
+	      		$('.error-message').removeClass('v-hide');
+	      	} 
+		  	
+	   	  }
+
+  	    });
+
+	});
+
+
+	$('input[name="new-playlist-name"]').keyup(function(e) {
+
+		if (e.keyCode == 13) {
+
+			var playlistName = $(this).val().trim();
+			var dataToSend = { name: playlistName };
+
+			if (playlistName == '') {
+				$.notify("Please write the name!");
+				return;
+			}
+
+			bp_ajax({
+
+		      action: 'create_playlist',
+		      method: 'get',
+		      data: dataToSend,
+		      contentType: 'application/json',
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	pName = '<p class="playlist-name">' + data['data']['name'] + '</p>';
+
+	      		pAddBtn = '<i class="add-song-to-playlist fa fa-plus-circle"></i>';
+
+	      		pId = '<input class="playlist-id" type="hidden" value=' + data['data']['id'] + '>'; 
+
+	      		htmlRow = '<div class="playlist-details">' + pId + pName + pAddBtn + '</div>';
+
+	      		$('.playlist-modal-content .modal-body').append(htmlRow);
+
+	      		$.notify("Playlist Created!", "success");
+		   	  
+		   	  }
+
+	  	    });
+
+	  	    $(this).val('');
+
+		} 
+		
+	});
+
+  	$('#myModal').on('hidden.bs.modal', function () {
+    	
+  		$('.error-message').addClass('v-hide');
+
+    });
+
+
+	

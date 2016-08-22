@@ -1,0 +1,110 @@
+.no-padding { padding: 0 !important; }
+.no-padding-top { padding-top: 0 !important; }
+.no-padding-right { padding-right: 0 !important; }
+.no-padding-bottom { padding-bottom: 0 !important; }
+.no-padding-left { padding-left: 0 !important; }
+
+.no-margin { margin: 0 !important; }
+.no-margin-top { margin-top: 0 !important; }
+.no-margin-right { margin-right: 0 !important; }
+.no-margin-bottom { margin-bottom: 0 !important; }
+.no-margin-left { margin-left: 0 !important; }
+
+.relative { position: relative; }
+.absolute { position: absolute; }
+
+.inline-block { display: inline-block; }
+.block { display: block !important; }
+
+.no-display { display: none; }
+.v-hide { visibility: hidden; }
+.v-show { visibility: visible; }
+.v-show-imp { visibility: visible!important; display: block!important; }
+.circle { border-radius: 100%; }
+.inline-edit { outline: none; }
+
+.full-min-height { min-height: 100vh; }
+.full-height { height: 100vh; }
+
+.text-left-not-xs, .text-left-not-sm, .text-left-not-md, .text-left-not-lg { text-align: left; }
+.text-center-not-xs, .text-center-not-sm, .text-center-not-md, .text-center-not-lg { text-align: center; }
+.text-right-not-xs, .text-right-not-sm, .text-right-not-md, .text-right-not-lg { text-align: right; }
+.text-justify-not-xs, .text-justify-not-sm, .text-justify-not-md, .text-justify-not-lg { text-align: justify; }
+
+// *
+// *  ---- Mixins
+// *
+ 
+.filter(@val) {
+  -webkit-filter: @val;
+  -moz-filter: @val;
+  -o-filter: @val;
+  -ms-filter: @val;
+  filter: @val;  
+}
+
+.gradient (@startColor: #eee, @endColor: white) {
+  background-color: @startColor;
+  background: -webkit-gradient(linear, left top, left bottom, from(@startColor), to(@endColor));
+  background: -webkit-linear-gradient(top, @startColor, @endColor);
+  background: -moz-linear-gradient(top, @startColor, @endColor);
+  background: -ms-linear-gradient(top, @startColor, @endColor);
+  background: -o-linear-gradient(top, @startColor, @endColor);
+}
+
+.horizontal-gradient (@startColor: #eee, @endColor: white) {
+  background-color: @startColor;
+  background-image: -webkit-gradient(linear, left top, right top, from(@startColor), to(@endColor));
+  background-image: -webkit-linear-gradient(left, @startColor, @endColor);
+  background-image: -moz-linear-gradient(left, @startColor, @endColor);
+  background-image: -ms-linear-gradient(left, @startColor, @endColor);
+  background-image: -o-linear-gradient(left, @startColor, @endColor);
+}
+
+.transform(@val) {
+  -webkit-transform: @val;
+  -moz-transform: @val;
+  -o-transform: @val;
+  -ms-transform: @val;
+  transform: @val;
+}
+
+.animation(@val) {
+  -webkit-animation: @val;
+  -moz-animation: @val;
+  -o-animation: @val;
+  -ms-animation: @val;
+  animation: @val;
+}
+
+.coloralpha(@property, @color, @alpha) {
+  @{property}: rgba(red(@color), green(@color), blue(@color), @alpha);
+}
+
+.coloralpha-boxshadow(@params, @color, @alpha, @inset) {
+  box-shadow: @params rgba(red(@color), green(@color), blue(@color), @alpha) @inset;
+}
+
+.animation-duration(@val) {
+  -webkit-animation-duration: @val;
+  -moz-animation-duration: @val;
+  -o-animation-duration: @val;
+  -ms-animation-duration: @val;
+  animation-duration: @val;
+}
+
+.animation-delay(@val) {
+  -webkit-animation-delay: @val;
+  -moz-animation-delay: @val;
+  -o-animation-delay: @val;
+  -ms-animation-delay: @val;
+  animation-delay: @val;
+}
+
+.animation-iteration-count(@val) {
+  -webkit-animation-iteration-count: @val;
+  -moz-animation-iteration-count: @val;
+  -o-animation-iteration-count: @val;
+  -ms-animation-iteration-count: @val;
+  animation-iteration-count: @val;
+}

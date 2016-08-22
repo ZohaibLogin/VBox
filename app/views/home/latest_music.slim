@@ -1,0 +1,17 @@
+#pjax-container
+
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content.songs-main-content.full-min-height
+			span.v-homepage-heading.v-green-word.v-heading-indent.v-title-first-word Latest 
+			span.v-homepage-heading.v-title-second-word Music
+			.vs-wrapper
+
+javascript: 
+
+	$(window).load(function(e) {
+
+		e.preventDefault;
+
+		latest_album_call('latest_music');
+
+	});

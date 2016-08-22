@@ -1,0 +1,81 @@
+#pjax-container
+	= render 'loader_and_no_internet'
+
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content.v-playlists-page.no-padding
+			.category-main-section.music-play-info-container.col-md-12.col-sm-12.col-xs-12.no-padding
+				.music-playlist-section.playlists-blocks.col-md-12.col-sm-12.col-xs-12
+					span.v-homepage-heading.v-heading-indent My 
+					span.v-homepage-heading.v-green-word Playlists
+					a.pull-right.ajax-link href="/edit_playlists" Edit Playlists
+					.clearfix
+					.p-content
+
+javascript:
+
+	var   htmlRowEl,
+          dynamicPartOne,
+          dynamicPartTwo,
+          dynamicPartThree,
+          dynamicPartFour,
+          dynamicPartFive,
+          dynamicPartSix,
+          dynamicParts,
+          outerColDiv = '<div class="col-md-1 col-sm-2 col-xs-4 no-padding">',
+          videoBlockDiv = '<div class="video-block">',
+          titleDiv = '<div class="vblock-content-wrapper">',
+          twoClosingDivs = '</div></div>';
+
+    var rowInitial = outerColDiv + videoBlockDiv;
+
+	function playlistPageCalls() {
+
+    	
+
+        bp_ajax({
+
+			action: 'get_user_playlists',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				if (data['success'] == false) {
+		      		$('.hp-first-loader').addClass('v-hide');
+		      		$('.slow-or-no-internet').removeClass('v-hide');
+		      		return;
+		      	}
+				$('.hp-first-loader').addClass('v-hide');
+
+				if (data['data']['data'].length < 1) {
+					$('.music-playlist-section').append('<p class="empty-playlist"> No playlist exist </p>');
+				}
+
+			    for (var i=0; i<data['data']['data'].length; i++) {
+
+			    	if (data['data']['data'][i]['playlist_thumbnail'] != null) {
+			    		dynamicPartOne = '<a class="video-play-link ajax-link" href="/music?playlist_id=' + data['data']['data'][i]['id'] + '"><img class="img-responsive" src=' + data['data']['data'][i]['playlist_thumbnail'] + '></img>';
+			    	}
+			    	else {
+			    		dynamicPartOne = '<a class="video-play-link ajax-link" href="/music?playlist_id=' + data['data']['data'][i]['id'] + '"><img class="img-responsive" src="placeholder_playlists1.png"></img>';
+			    	}
+			    	dynamicPartsTwo = titleDiv + '<p>' + data['data']['data'][i]['name'] + '</p></a>';
+
+					htmlRow = rowInitial + dynamicPartOne + dynamicPartsTwo + twoClosingDivs;
+					$('.p-content').append(htmlRow);
+
+			    }
+			    
+
+			}
+
+        });
+
+    }
+
+    $(window).load(function(e) {
+
+    	playlistPageCalls();
+
+    });

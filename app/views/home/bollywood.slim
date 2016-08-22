@@ -1,0 +1,540 @@
+#pjax-container
+	= render 'loader_and_no_internet'
+
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content.no-padding
+			= render 'video_category'
+
+
+javascript:
+
+	$('.video-block').each(function(i) {
+			
+		var topOfObject = $(this).offset().top,
+			bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+		if (bottomOfWindow > topOfObject) {
+			$(this).animate({'opacity': '1'}, 500);
+		}
+
+	});
+    $('.featured-video-block').each(function(i) {
+                    
+        var topOfObject = $(this).offset().top,
+              bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+        if (bottomOfWindow > topOfObject) {
+              $(this).animate({'opacity': '1'}, 500);
+        }
+
+    });
+
+	$(window).scroll(function() {
+		$('.video-block').each(function(i) {
+			
+			var topOfObject = $(this).offset().top,
+				bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+				$(this).animate({'opacity': '1'}, 500);
+			}
+
+		});
+        $('.featured-video-block').each(function(i) {
+                    
+			var topOfObject = $(this).offset().top,
+			    bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+			    $(this).animate({'opacity': '1'}, 500);
+			}
+
+        });
+	});
+
+	$('.bollywood-latest').click(function(e) {
+
+		e.preventDefault;
+
+		$(this).siblings().removeClass('active-bollywood-tab');
+		$(this).addClass('active-bollywood-tab');
+
+		if (!($('.browse-featured').hasClass('no-display'))) {
+
+		    $('.bollywood-featured-inner-content').addClass('no-display');
+		    $('.browse-featured').addClass('no-display');
+
+		}
+
+		if (!($('.browse-top-rated').hasClass('no-display'))) {
+
+		    $('.bollywood-top-rated-inner-content').addClass('no-display');
+		    $('.browse-top-rated').addClass('no-display');
+
+		}
+
+		if ($('.browse-latest').hasClass('no-display')) {
+
+		    $('.bollywood-latest-inner-content').removeClass('no-display');
+		    $('.browse-latest').removeClass('no-display');
+
+		}
+
+    });
+
+    $('.bollywood-featured').click(function(e) {
+
+		e.preventDefault;
+
+		$(this).siblings().removeClass('active-bollywood-tab');
+		$(this).addClass('active-bollywood-tab');
+
+		if (!($('.browse-latest').hasClass('no-display'))) {
+
+		    $('.bollywood-latest-inner-content').addClass('no-display');
+		    $('.browse-latest').addClass('no-display');
+
+		}
+
+		if (!($('.browse-top-rated').hasClass('no-display'))) {
+
+		    $('.bollywood-top-rated-inner-content').addClass('no-display');
+		    $('.browse-top-rated').addClass('no-display');
+
+		}
+
+		if ($('.browse-featured').hasClass('no-display')) {
+
+		    $('.bollywood-featured-inner-content').removeClass('no-display');
+		    $('.browse-featured').removeClass('no-display');
+
+		}
+
+    });
+
+    $('.bollywood-top-rated').click(function(e) {
+
+		e.preventDefault;
+
+		$(this).siblings().removeClass('active-bollywood-tab');
+		$(this).addClass('active-bollywood-tab');
+
+		if (!($('.browse-latest').hasClass('no-display'))) {
+
+		    $('.bollywood-latest-inner-content').addClass('no-display');
+		    $('.browse-latest').addClass('no-display');
+
+		}
+
+		if (!($('.browse-featured').hasClass('no-display'))) {
+
+		    $('.bollywood-featured-inner-content').addClass('no-display');
+		    $('.browse-featured').addClass('no-display');
+
+		}
+
+		if ($('.browse-top-rated').hasClass('no-display')) {
+
+		    $('.bollywood-top-rated-inner-content').removeClass('no-display');
+		    $('.browse-top-rated').removeClass('no-display');
+
+		}
+
+    });
+
+    // Fetching more bollywood video results on load more click
+
+    var   pageCounter = 1,
+          htmlRowEl,
+          dynamicPartOne,
+          dynamicPartThree,
+          dynamicPartFour,
+          dynamicPartFive,
+          dynamicPartSix,
+          dynamicParts,
+          outerColDiv = '<div class="col-md-2 col-sm-3 col-xs-6 no-padding">',
+          videoBlockDiv = '<div class="video-block">',
+          titleDiv = '<div class="vblock-content-wrapper">',
+          twoClosingDivs = '</div></div>';
+
+    $('.load-more-latest').click(function(e) {
+
+		e.preventDefault;
+
+		pageCounter++;
+
+		var loadMoreDataToSend = { page: pageCounter, category: 'bollywood_latest' };
+		var rowInitial = outerColDiv + videoBlockDiv;
+
+		bp_ajax({
+
+		    action: 'more_results',
+		    method: 'get',
+		    contentType: 'application/json',
+		    data: loadMoreDataToSend,
+		    notifications: false,
+		    spinner: true,
+		    callback: function(data) {
+
+				if (data['data']['current_page'] == data['data']['total_pages']) {
+				    $('.load-more-latest').hide();
+				}
+
+				for (var i=0; i< data['data']['data'].length; i++) {
+
+				    dynamicPartThree = '<a class="video-play-link" href="/video?id=' + data['data']['data'][i]['id'] + '">' + '<img class="img-responsive video-thumbnail" src=' + data['data']['data'][i]['thumb_large'] + '></img>' + '<span class="duration">' + data['data']['data'][i]['duration'].substring(3) + '</span>';
+				    dynamicPartFour = '<p>' + data['data']['data'][i]['title'] + '</p></a>';
+				    dynamicPartFive = '<span>' + data['data']['data'][i]['views'] + ' views </span>';
+
+				    dynamicPartsOne = dynamicPartThree;
+				    dynamicPartsTwo = titleDiv + dynamicPartFour + dynamicPartFive;                      
+
+				    htmlRowEl = rowInitial + dynamicPartsOne + dynamicPartsTwo + twoClosingDivs;
+
+				    $('.load-more-wrapper-latest').before(htmlRowEl);
+
+				}
+
+				$('.video-block').each(function(i) {
+			
+					var topOfObject = $(this).offset().top,
+						bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+					if (bottomOfWindow > topOfObject) {
+						$(this).animate({'opacity': '1'}, 500);
+					}
+
+				});
+
+		    }   
+
+		});
+
+    });
+
+	// Fetching more bollywood featured video results on load more click
+
+    var   pageCounter = 1,
+          htmlRowEl,
+          dynamicPartOne,
+          dynamicPartThree,
+          dynamicPartFour,
+          dynamicPartFive,
+          dynamicPartSix,
+          dynamicParts,
+          outerColDiv = '<div class="col-md-2 col-sm-3 col-xs-6 no-padding">',
+          videoBlockDiv = '<div class="video-block ">',
+          titleDiv = '<div class="vblock-content-wrapper">',
+          twoClosingDivs = '</div></div>';
+
+    $('.load-more-featured').click(function(e) {
+
+		e.preventDefault;
+
+		pageCounter++;
+
+		var loadMoreDataToSend = { page: pageCounter, category: 'bollywood_featured' };
+		var rowInitial = outerColDiv + videoBlockDiv;
+
+		bp_ajax({
+
+		    action: 'more_results',
+		    method: 'get',
+		    contentType: 'application/json',
+		    data: loadMoreDataToSend,
+		    notifications: false,
+		    spinner: true,
+		    callback: function(data) {
+
+				if (data['data']['current_page'] == data['data']['total_pages']) {
+				    $('.load-more-featured').hide();
+				}
+
+				for (var i=0; i< data['data']['data'].length; i++) {
+
+				    dynamicPartThree = '<a class="video-play-link" href="/video?id=' + data['data']['data'][i]['id'] + '">' + '<img class="img-responsive video-thumbnail" src=' + data['data']['data'][i]['thumb_large'] + '></img>' + '<span class="duration">' + data['data']['data'][i]['duration'].substring(3) + '</span>';
+				    dynamicPartFour = '<p>' + data['data']['data'][i]['title'] + '</p></a>';
+				    dynamicPartFive = '<span>' + data['data']['data'][i]['views'] + ' views </span>';
+
+				    dynamicPartsOne = dynamicPartThree;
+				    dynamicPartsTwo = titleDiv + dynamicPartFour + dynamicPartFive;                      
+
+				    htmlRowEl = rowInitial + dynamicPartsOne + dynamicPartsTwo + twoClosingDivs;
+
+				    $('.load-more-wrapper-featured').before(htmlRowEl);
+
+				}
+
+				$('.video-block').each(function(i) {
+			
+					var topOfObject = $(this).offset().top,
+						bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+					if (bottomOfWindow > topOfObject) {
+						$(this).animate({'opacity': '1'}, 500);
+					}
+
+				});
+
+		    }   
+
+		});
+
+    });
+
+	// Fetching more bollywood top-rated video results on load more click
+
+    var   pageCounter = 1,
+          htmlRowEl,
+          dynamicPartOne,
+          dynamicPartThree,
+          dynamicPartFour,
+          dynamicPartFive,
+          dynamicPartSix,
+          dynamicParts,
+          outerColDiv = '<div class="col-md-2 col-sm-3 col-xs-6 no-padding">',
+          videoBlockDiv = '<div class="video-block">',
+          titleDiv = '<div class="vblock-content-wrapper">',
+          twoClosingDivs = '</div></div>';
+
+    $('.load-more-top-rated').click(function(e) {
+
+		e.preventDefault;
+
+		pageCounter++;
+
+		var loadMoreDataToSend = { page: pageCounter, category: 'bollywood_top_rated' };
+		var rowInitial = outerColDiv + videoBlockDiv;
+
+		bp_ajax({
+
+		    action: 'more_results',
+		    method: 'get',
+		    contentType: 'application/json',
+		    data: loadMoreDataToSend,
+		    notifications: false,
+		    spinner: true,
+		    callback: function(data) {
+
+				if (data['data']['current_page'] == data['data']['total_pages']) {
+				    $('.load-more-top-rated').hide();
+				}
+
+				for (var i=0; i< data['data']['data'].length; i++) {
+
+				    dynamicPartThree = '<a class="video-play-link" href="/video?id=' + data['data']['data'][i]['id'] + '">' + '<img class="img-responsive video-thumbnail" src=' + data['data']['data'][i]['thumb_large'] + '></img>' + '<span class="duration">' + data['data']['data'][i]['duration'].substring(3) + '</span>';
+				    dynamicPartFour = '<p>' + data['data']['data'][i]['title'] + '</p></a>';
+				    dynamicPartFive = '<span>' + data['data']['data'][i]['views'] + ' views </span>';
+
+				    dynamicPartsOne = dynamicPartThree;
+				    dynamicPartsTwo = titleDiv + dynamicPartFour + dynamicPartFive;                      
+
+				    htmlRowEl = rowInitial + dynamicPartsOne + dynamicPartsTwo + twoClosingDivs;
+
+				    $('.load-more-wrapper-top-rated').before(htmlRowEl);
+
+				}
+
+				$('.video-block').each(function(i) {
+			
+					var topOfObject = $(this).offset().top,
+						bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+					if (bottomOfWindow > topOfObject) {
+						$(this).animate({'opacity': '1'}, 500);
+					}
+
+				});
+
+		    }   
+
+		});
+
+    });
+
+	function bollywoodPageAjaxCalls() {
+
+		bp_ajax({
+    
+			action: 'bollywood_latest',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				if (data['success'] == false) {
+		      		$('.hp-first-loader').addClass('v-hide');
+		      		$('.slow-or-no-internet').removeClass('v-hide');
+		      		return;
+		      	}
+				$('.hp-first-loader').addClass('v-hide');
+
+		      	$('.bollywood-page').removeClass('v-hide');
+
+
+				$('.music-favorite-section').removeClass('v-hide');
+
+			    if (data['data']['total_pages'] == 1) {
+			          $('.load-more-latest').hide();
+			    }
+
+			    $('.v-bollywood-title').text(data['data']['category_name']);
+
+			    //big image
+			    $('.bollywood-latest-inner-content .bollywood-section-one a').attr("href", "/video?id=" + data['data']['data'][0]['id']);
+			    $('.bollywood-latest-inner-content .bollywood-section-one img.video-thumbnail').attr("src", data['data']['data'][0]['thumb_x_large']);
+			    
+			    //small image and content
+			    var j = 0;
+			    $('.bollywood-latest-inner-content .bollywood-section-two .bollywood-sm-container-wrapper').each(function(i, obj) {
+			          j= i+1;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img").attr("src", data['data']['data'][j]['thumb_medium']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span").text(data['data']['data'][j]['views'] + " views");
+			    });
+			    $('.bollywood-latest-inner-content .bollywood-section-three .bollywood-sm-container-wrapper').each(function(i, obj) {
+			          j= i+4;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img").attr("src", data['data']['data'][j]['thumb_medium']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span").text(data['data']['data'][j]['views'] + " views");
+			    });
+			    $('.browse-latest .bollywood-latest-all-video-block .video-block').each(function(i, obj) {
+			          
+			          $(this).removeClass('v-hide');
+
+			          j= i+7;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img.video-thumbnail").attr("src", data['data']['data'][j]['thumb_large']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span.view-count").text(data['data']['data'][j]['views'] + " views");
+			          $(this).find("span.duration").text(data['data']['data'][j]['duration'].substring(3));
+			    });
+			}
+
+        });
+
+		// Featured
+
+	    bp_ajax({
+
+			action: 'bollywood_featured',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+			    if (data['data']['total_pages'] == 1) {
+			          $('.load-more-featured').hide();
+			    }
+
+			    //big image
+			    $('.bollywood-featured-inner-content .bollywood-section-one a').attr("href", "/video?id=" + data['data']['data'][0]['id']);
+			    $('.bollywood-featured-inner-content .bollywood-section-one img.video-thumbnail').attr("src", data['data']['data'][0]['thumb_x_large']);
+			    
+			    //small image and content
+			    var j = 0;
+			    $('.bollywood-featured-inner-content .bollywood-section-two .bollywood-sm-container-wrapper').each(function(i, obj) {
+			          j= i+1;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img").attr("src", data['data']['data'][j]['thumb_medium']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span").text(data['data']['data'][j]['views'] + " views");
+			    });
+			    $('.bollywood-featured-inner-content .bollywood-section-three .bollywood-sm-container-wrapper').each(function(i, obj) {
+			          j= i+4;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img").attr("src", data['data']['data'][j]['thumb_medium']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span").text(data['data']['data'][j]['views'] + " views");
+			    });
+			    $('.browse-featured .bollywood-featured-all-video-block .video-block').each(function(i, obj) {
+			          
+			          $(this).removeClass('v-hide');
+
+			          j= i+7;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img.video-thumbnail").attr("src", data['data']['data'][j]['thumb_medium']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span.view-count").text(data['data']['data'][j]['views'] + " views");
+			          $(this).find("span.duration").text(data['data']['data'][j]['duration'].substring(3));
+			    });
+			}
+
+	    });
+
+		// Top Rated
+
+        bp_ajax({
+    
+			action: 'bollywood_top_rated',
+			method: 'get',
+			contentType: 'application/json',
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+			    if (data['data']['total_pages'] == 1) {
+			          $('.load-more-top-rated').hide();
+			    }
+
+			    //big image
+			    $('.bollywood-top-rated-inner-content .bollywood-section-one a').attr("href", "/video?id=" + data['data']['data'][0]['id']);
+			    $('.bollywood-top-rated-inner-content .bollywood-section-one img.video-thumbnail').attr("src", data['data']['data'][0]['thumb_x_large']);
+			    
+			    //small image and content
+			    var j = 0;
+			    $('.bollywood-top-rated-inner-content .bollywood-section-two .bollywood-sm-container-wrapper').each(function(i, obj) {
+			          j= i+1;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img").attr("src", data['data']['data'][j]['thumb_medium']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span").text(data['data']['data'][j]['views'] + " views");
+			    });
+			    $('.bollywood-top-rated-inner-content .bollywood-section-three .bollywood-sm-container-wrapper').each(function(i, obj) {
+			          j= i+4;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img").attr("src", data['data']['data'][j]['thumb_medium']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span").text(data['data']['data'][j]['views'] + " views");
+			    });
+			    $('.browse-top-rated .bollywood-top-rated-all-video-block .video-block').each(function(i, obj) {
+
+			    	  $(this).removeClass('v-hide');
+
+			          j= i+7;
+			          $(this).find("a").attr("href", "/video?id=" + data['data']['data'][j]['id']);
+			          $(this).find("img.video-thumbnail").attr("src", data['data']['data'][j]['thumb_large']);
+			          $(this).find("p").text(data['data']['data'][j]['title']);
+			          $(this).find("span.view-count").text(data['data']['data'][j]['views'] + " views");
+			          $(this).find("span.duration").text(data['data']['data'][j]['duration'].substring(3));
+			    });
+
+			}
+
+        });
+
+
+	}
+
+	$(window).load(function() {
+
+		setTimeout(function() {
+
+            if (!$('.hp-first-loader').hasClass('v-hide')) {
+                  $('.hp-first-loader').addClass('v-hide');
+                  $('.slow-or-no-internet').removeClass('v-hide');
+                  $('.kh-main-content').addClass('v-hide');
+                  return;
+            }
+
+      	}, 15000);
+
+		$('.bollywood-menu').addClass('active').siblings().removeClass('active');
+
+		bollywoodPageAjaxCalls();
+
+	});

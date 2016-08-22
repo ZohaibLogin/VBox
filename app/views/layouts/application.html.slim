@@ -1,0 +1,21 @@
+doctype html
+html
+  head
+    title Vbox.mobi | A World of Unlimited Videos
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+    meta property="og:type" content="website"
+    meta property="og:title" content=@video_title
+    = stylesheet_link_tag "application", media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag "application", 'data-turbolinks-track' => true
+    = csrf_meta_tags
+    meta property="og:image" content=@video_preview
+    meta property="og:url" content=@share_url
+    meta property="og:description" content="Vbox app/portal brings for you latest Bollywood music, best comedy dramas and popular movies. Tune in to Vbox and enjoy the world of unlimited videos."
+     
+  body.no-margin
+    = render "layouts"
+    = yield
+    = render "music_player"
+
+
+

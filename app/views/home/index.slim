@@ -1,0 +1,377 @@
+#pjax-container
+	= render 'loader_and_no_internet'	
+		
+	.container-fluid.main-inner-container.no-padding-left
+		
+		.kh-main-content.row
+
+			.v-wrapper.hp-first-sec.col-md-12.col-sm-12
+				.col-md-6.col-sm-6.col-xs-12.no-padding
+					.img-container-lg
+						- if session[:phone_number] != ''
+							a href="#"
+								.landing-thumb-lg
+									img src="placeholder.jpg"
+								.v-bottom-overlay
+									p 
+									i.fa.fa-clock-o
+									span.v-duration
+									span 
+									img src="home_icon_play_banner.png"
+						- else
+							.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+								.landing-thumb-lg
+									img src="placeholder.jpg"
+								.v-bottom-overlay
+									p
+									i.fa.fa-clock-o
+									span.v-duration
+									span									 
+									img src="home_icon_play_banner.png"
+							
+				.col-md-6.col-sm-6.col-xs-12.homepage-sm-section.hide-sm-screen
+					.img-container-sm.row
+						- if session[:phone_number] != ''
+							.col-md-4.col-sm-4.no-padding
+								a href="#"
+									img src="placeholder.jpg"
+									span.duration
+							.col-md-8.col-sm-8
+								.v-sm-content-wrapper
+									a href="#"
+										p.v-title 
+									.type-and-tag
+										span.v-type 
+										span.v-newtag-one.v-new-tag NEW
+									p.v-views 
+									
+						- else
+							.col-md-4.col-sm-4.no-padding
+								.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+									img.video-thumbnail src="placeholder.jpg"
+									span.duration
+							.col-md-8.col-sm-8
+								.v-sm-content-wrapper
+									.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+										p.v-title 
+									.type-and-tag
+										span.v-type 
+										span.v-newtag-one.v-new-tag NEW
+									p.v-views 
+					.img-container-sm.row
+						- if session[:phone_number] != ''
+							.col-md-4.col-sm-4.no-padding
+								a href="#"
+									img src="placeholder.jpg"
+									span.duration
+							.col-md-8.col-sm-8
+								.v-sm-content-wrapper
+									a href="#"
+										p.v-title 
+									.type-and-tag
+										span.v-type 
+										span.v-newtag-one.v-new-tag NEW
+									p.v-views 
+									
+						- else
+							.col-md-4.col-sm-4.no-padding
+								.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+									img.video-thumbnail src="placeholder.jpg"
+									span.duration
+							.col-md-8.col-sm-8
+								.v-sm-content-wrapper
+									.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+										p.v-title 
+									.type-and-tag
+										span.v-type 
+										span.v-newtag-one.v-new-tag NEW
+									p.v-views 
+					.img-container-sm.row
+						- if session[:phone_number] != ''
+							.col-md-4.col-sm-4.no-padding
+								a href="#"
+									img src="placeholder.jpg"
+									span.duration
+							.col-md-8.col-sm-8
+								.v-sm-content-wrapper
+									a href="#"
+										p.v-title 
+									.type-and-tag
+										span.v-type 
+									p.v-views 
+									
+						- else
+							.col-md-4.col-sm-4.no-padding
+								.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+									img.video-thumbnail src="placeholder.jpg"
+									span.duration
+							.col-md-8.col-sm-8
+								.v-sm-content-wrapper
+									.siginin-popup-video data-target="#signInModal" data-toggle="modal"
+										p.v-title 
+									.type-and-tag
+										span.v-type 
+									p.v-views 
+
+		- i = 0
+		- while i < @home_lists.length
+			- if @home_lists[i]['box_type'] == "albums"
+				.kh-main-content.homepage-music-section.row id=i
+					span.v-homepage-heading.v-green-word.v-heading-indent.v-title-first-word  
+					span.v-homepage-heading.v-title-second-word 
+					.main-section.row.no-margin.owl-carousel
+						- j=0
+						- while j<18
+							- j = j+1
+							.video-block
+								= render "static_music_block_home"
+			- else			
+				.kh-main-content.homepage-video-section.row id=i
+					span.v-homepage-heading.v-green-word.v-heading-indent.v-title-first-word  
+					span.v-homepage-heading.v-title-second-word 
+					.main-section.row.no-margin.owl-carousel
+						- j=0
+						- while j<18
+							- j=j+1
+							.video-block
+								= render "static_video_block"
+						
+			- i = i + 1
+
+
+
+
+javascript:
+	/*
+	$('.main-section .video-block').transition({
+	    animation : 'scale',
+	    reverse   : 'false', // default setting
+	    interval  : 200
+	});
+
+	$('.img-container-lg').transition({
+	    animation : 'scale',
+	    reverse   : 'false', // default setting
+	    interval  : 200
+	});
+
+	$('.homepage-sm-section .img-container-sm').transition({
+	    animation : 'scale',
+	    reverse   : 'false', // default setting
+	    interval  : 200
+	});
+	*/
+
+	$('.main-section').hover(function(e) {
+
+		e.preventDefault;
+
+			$(this).find('.owl-controls .owl-buttons .owl-next').addClass('scale-next-caret');
+			$(this).find('.owl-controls .owl-buttons .owl-prev').addClass('v-show').addClass('scale-prev-caret');
+
+		}, function(e) {
+			
+			e.preventDefault;
+
+			$(this).find('.owl-controls .owl-buttons .owl-next').removeClass('scale-next-caret');
+			$(this).find('.owl-controls .owl-buttons .owl-prev').removeClass('v-show').removeClass('scale-prev-caret');
+
+	});
+
+	$('.homepage-video-section .owl-carousel').owlCarousel({
+	  navigation : true,
+	  pagination: false,
+      items : 6, //10 items above 1000px browser width
+      itemsDesktop : [1000,6], //5 items between 1000px and 901px
+      itemsDesktopSmall : [900,4], // betweem 900px and 601px
+      itemsTablet: [600,2], //2 items between 600 and 0
+      itemsMobile : false // itemsMobile disabled - inherit from itemsTablet option
+    });
+	
+    $('.homepage-music-section .owl-carousel').owlCarousel({
+      navigation : true,
+      pagination: false,
+      items : 8, //10 items above 1000px browser width
+      itemsDesktop : [1000,8], //5 items between 1000px and 901px
+      itemsDesktopSmall : [900,6], // betweem 900px and 601px
+      itemsTablet: [600,3], //2 items between 600 and 0
+      itemsMobile : false // itemsMobile disabled - inherit from itemsTablet option
+    });
+
+	$('.song-play-link').click(function(e) {
+
+		var songPlayId = $(this).siblings('input.song-play-id').val();
+		var songIdDataToSend = { id: songPlayId };
+
+		bp_ajax({
+
+		      action: 'single_song_details',
+		      method: 'get',
+		      contentType: 'application/json',
+		      data: songIdDataToSend,
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	$('input[name="song-id"].playing-song-id').val(data['data']['id']);
+		      	$('input[name="playlist-id"].playing-playlist-id').val("");
+
+		      	$('.kh-music-player').removeClass('no-display');
+
+				$('.playlist-player .music-play-thumb-sm img').attr('src', data['data']['thumb_url']);
+				$('.playlist-player .music-play-title p')[0].innerHTML = data['data']['title'];
+				$('.playlist-player audio.kh-audio-player').attr('src', data['data']['mp3_url']);
+
+				$('.playlist-player audio.kh-audio-player').attr('autoplay', "1");
+
+				$('.play-pause-action').removeClass('fa-play-circle').addClass('fa-pause-circle');
+		            
+		   	}
+
+		});
+
+	});
+
+	function homepageAjaxCalls() {
+
+		// Fetching trending section
+		var htmlRow,
+			j, 
+			dataToSend;
+
+		for (var sectionsCounter = 0; sectionsCounter < $('.kh-main-content').length - 1; sectionsCounter++) {
+
+			dataToSend = { sessionIndex: sectionsCounter };
+
+			bp_ajax({
+
+			      action: 'home_section',
+			      method: 'get',
+			      contentType: 'application/json',
+			      data: dataToSend,
+			      notifications: false,
+			      spinner: true,
+			      callback: function(data) {
+			      	/*
+			      	if (data['success'] == false) {
+			      		$('.hp-first-loader').addClass('v-hide');
+			      		$('.slow-or-no-internet').removeClass('v-hide');
+			      		return;
+			      	}
+
+			      	$('.hp-first-sec').removeClass('v-hide');
+			      	
+					*/
+					$('.hp-first-loader').addClass('v-hide');
+					if (data['data'][1] == '0') {
+
+				      	$('.img-container-lg a').attr("href", '/video?id=' + data['data'][0]['data'][0]['id']);
+				      	$('.img-container-lg .landing-thumb-lg img').attr("src", data['data'][0]['data'][0]['thumb']);
+				      	$('.img-container-lg p').text(data['data'][0]['data'][0]['title']);
+				      	$('.img-container-lg span').text(data['data'][0]['data'][0]['views'] + " views");
+				      	$('.img-container-lg .v-duration').text(data['data'][0]['data'][0]['duration'].substring(3));
+
+
+				      	$('.img-container-sm').each(function(i, obj) {
+				      		j = i + 1;
+				      		$(this).find('a').attr("href", '/video?id=' + data['data'][0]['data'][j]['id']);
+				      		$(this).find('img').attr("src", data['data'][0]['data'][j]['thumb_large']);
+				      		$(this).find('span.duration').text(data['data'][0]['data'][j]['duration'].substring(3));
+				      		$(this).find('p.v-title').text(data['data'][0]['data'][j]['title']);
+				      		$(this).find('p.v-views').text(data['data'][0]['data'][j]['views'] + " views");
+				      		$(this).find('span.v-type').text(data['data'][0]['data'][j]['category_name']);
+
+				      	});
+
+				      	$('#' + data['data'][1] + ' .v-title-first-word').text(data['data'][0]['title'].substr(0, data['data'][0]['title'].indexOf(' ')) + ' ');
+				      	$('#' + data['data'][1] + ' .v-title-second-word').text(data['data'][0]['title'].substr(data['data'][0]['title'].indexOf(' ')+1, data['data'][0]['title'].length));
+
+				      	$('#' + data['data'][1] + ' .main-section .video-block').each(function(i, obj) {
+				      		j = i + 4;
+				      		
+				      		$(this).find('img.video-thumbnail').attr("src", data['data'][0]['data'][j]['thumb_large']);
+				      		$(this).find('.vblock-content-wrapper a').attr("href", '/video?id=' + data['data'][0]['data'][j]['id']);
+				      		$(this).find('p').text(data['data'][0]['data'][j]['title']);
+				      		$(this).find('span.view-count').text(data['data'][0]['data'][j]['views'] + " views");
+				      		$(this).find('span.duration').text(data['data'][0]['data'][j]['duration'].substring(3));
+				      		$(this).find('a.video-play-link').attr("href", '/video?id=' + data['data'][0]['data'][j]['id']);
+					      
+
+				      	});
+
+				    }
+
+				    else {
+
+				    	if ( data['data'][0]['box_type'] == 'albums') {
+				    		$('#' + data['data'][1] + ' .v-title-first-word').text(data['data'][0]['title'].substr(0, data['data'][0]['title'].indexOf(' ')) + ' ');
+					      	$('#' + data['data'][1] + ' .v-title-second-word').text(data['data'][0]['title'].substr(data['data'][0]['title'].indexOf(' ')+1, data['data'][0]['title'].length));
+
+					      	$('#' + data['data'][1] + ' .main-section .video-block').each(function(i, obj) {
+
+					      		$(this).find('img.album-thumbnail').attr("src", data['data'][0]['data'][i]['thumb_url']);
+					      		$(this).find('a').attr("href", '/music?id=' + data['data'][0]['data'][i]['id']);
+					      		$(this).find('.music-content a').attr("href", '/music?id=' + data['data'][0]['data'][i]['id']);
+					      		$(this).find('p.v-music-title').text(data['data'][0]['data'][i]['title']);
+					      		$(this).find('p.v-music-artists').text(data['data'][0]['data'][i]['artist_name']);
+
+		      				});
+				    	}
+
+				    	else {
+
+					      	$('#' + data['data'][1] + ' .v-title-first-word').text(data['data'][0]['title'].substr(0, data['data'][0]['title'].indexOf(' ')) + ' ');
+					      	$('#' + data['data'][1] + ' .v-title-second-word').text(data['data'][0]['title'].substr(data['data'][0]['title'].indexOf(' ')+1, data['data'][0]['title'].length));
+
+					      	$('#' + data['data'][1] + ' .main-section .video-block').each(function(i, obj) {
+					      		
+					      		$(this).find('img.video-thumbnail').attr("src", data['data'][0]['data'][i]['thumb_large']);
+					      		$(this).find('.vblock-content-wrapper a').attr("href", '/video?id=' + data['data'][0]['data'][i]['id']);
+					      		$(this).find('p').text(data['data'][0]['data'][i]['title']);
+					      		$(this).find('span.view-count').text(data['data'][0]['data'][i]['views'] + " views");
+					      		$(this).find('span.duration').text(data['data'][0]['data'][i]['duration'].substring(3));
+					      		$(this).find('a.video-play-link').attr("href", '/video?id=' + data['data'][0]['data'][i]['id']);
+						      
+
+					      	});
+					    }
+				    }
+			   	}
+			});
+		}
+	}
+
+	$(window).load(function() {
+		
+		/*
+		setTimeout(function() {
+
+            if (!$('.hp-first-loader').hasClass('v-hide')) {
+                  $('.hp-first-loader').addClass('v-hide');
+                  $('.slow-or-no-internet').removeClass('v-hide');
+                  $('.kh-main-content').addClass('v-hide');
+                  return;
+            }
+
+      	}, 15000);
+		*/
+
+		$('.home-menu').addClass('active-menu-link').siblings().removeClass('active-menu-link');
+
+		var ua = navigator.userAgent.toLowerCase();
+		var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+
+		if(isAndroid) {
+		    $('.kh-android-bar').removeClass('no-display');
+		}
+
+		if ( firstImpression() ) {
+
+		    if(isAndroid) {
+		          window.location = '/vbox_app';
+		    }
+		}
+
+		homepageAjaxCalls();
+
+	});

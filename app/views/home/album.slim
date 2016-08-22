@@ -1,0 +1,203 @@
+#pjax-container
+
+	.container-fluid.main-inner-container.no-padding-left
+		.row.kh-main-content
+			.category-main-section.col-md-12.col-sm-12.col-xs-12.no-padding-left.no-padding-right.music-trends.music-album
+				h3.no-margin-bottom
+				.album-music-container
+			
+javascript: 
+
+	function getParameterByName(name) {
+
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+      
+    }
+
+    $('.video-block').each(function(i) {
+                  
+        var topOfObject = $(this).offset().top,
+              bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+        if (bottomOfWindow > topOfObject) {
+              $(this).animate({'opacity': '1'}, 500);
+        }
+
+    });
+
+	$('.featured-video-block').each(function(i) {
+	                
+	    var topOfObject = $(this).offset().top,
+	          bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+	    if (bottomOfWindow > topOfObject) {
+	          $(this).animate({'opacity': '1'}, 500);
+	    }
+
+	});
+
+	$(window).scroll(function() {
+	    $('.video-block').each(function(i) {
+          
+			var topOfObject = $(this).offset().top,
+			    bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+			    $(this).animate({'opacity': '1'}, 500);
+			}
+
+	    });
+	    $('.featured-video-block').each(function(i) {
+	                
+			var topOfObject = $(this).offset().top,
+			    bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+			if (bottomOfWindow > topOfObject) {
+			    $(this).animate({'opacity': '1'}, 500);
+			}
+
+	    });
+	});
+
+	$(document.body).on('click', '.vblock-content-wrapper p' ,function(e) {
+
+		e.preventDefault;
+
+		var songId = $(this).parent().siblings('input.song-play-id').val();
+
+		var songIdDataToSend = { id: songId };
+
+		bp_ajax({
+
+		      action: 'single_song_details',
+		      method: 'get',
+		      contentType: 'application/json',
+		      data: songIdDataToSend,
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	$('input[name="song-id"].playing-song-id').val(data['data']['id']);
+		      	$('input[name="playlist-id"].playing-playlist-id').val("");
+
+		      	$('.kh-music-player').removeClass('no-display');
+
+				$('.playlist-player .music-play-thumb-sm img').attr('src', data['data']['thumb_url']);
+				$('.playlist-player .music-play-title p')[0].innerHTML = data['data']['title'];
+				$('.playlist-player audio.kh-audio-player').attr('src', data['data']['mp3_url']);
+
+				$('.playlist-player audio.kh-audio-player').attr('autoplay', "1");
+
+				$('.play-pause-action').removeClass('fa-play-circle').addClass('fa-pause-circle');
+		            
+		   	}
+
+		});
+
+	});
+
+	$(document.body).on('click', '.song-play-action' ,function(e) {
+
+		e.preventDefault;
+
+		var songId = $(this).siblings('input.song-play-id').val();
+
+		var songIdDataToSend = { id: songId };
+
+		bp_ajax({
+
+		      action: 'single_song_details',
+		      method: 'get',
+		      contentType: 'application/json',
+		      data: songIdDataToSend,
+		      notifications: false,
+		      spinner: true,
+		      callback: function(data) {
+
+		      	$('input[name="song-id"].playing-song-id').val(data['data']['id']);
+		      	$('input[name="playlist-id"].playing-playlist-id').val("");
+
+		      	$('.kh-music-player').removeClass('no-display');
+
+				$('.playlist-player .music-play-thumb-sm img').attr('src', data['data']['thumb_url']);
+				$('.playlist-player .music-play-title p')[0].innerHTML = data['data']['title'];
+				$('.playlist-player audio.kh-audio-player').attr('src', data['data']['mp3_url']);
+
+				$('.playlist-player audio.kh-audio-player').attr('autoplay', "1");
+
+				$('.play-pause-action').removeClass('fa-play-circle').addClass('fa-pause-circle');
+		            
+		   	}
+
+		});
+
+	});
+
+	$(window).load(function() {
+
+		var albumId = getParameterByName('id');
+        var albumResultsDataToSend = { id: albumId };
+
+        var   htmlRowEl,
+              dynamicPartOne,
+              dynamicPartTwo,
+              dynamicPartThree,
+              dynamicPartFour,
+              dynamicPartFive,
+              dynamicPartSix,
+              dynamicPartsTwo,
+              outerColDiv = '<div class="col-md-2 col-sm-3 col-xs-6 no-padding">',
+              videoBlockDiv = '<div class="video-block">',
+              titleDiv = '<div class="vblock-content-wrapper">',
+              twoClosingDivs = '</div></div>';
+
+        var rowInitial = outerColDiv + videoBlockDiv;
+
+        bp_ajax({
+
+			action: 'album_results',
+			method: 'get',
+			contentType: 'application/json',
+			data: albumResultsDataToSend,
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+			    $('.music-album h3').text(data['data']['title']);
+
+			    for (var i = 0; i < data['data']['songs'].length; i++) {
+
+					dynamicPartOne = '<img class="img-responsive album-song-play-action" src=' + data['data']['songs'][i]['thumb_url'] + '></img>';
+					dynamicPartTwo = '<input type="hidden" class="song-play-id" value=' + data['data']['songs'][i]['id'] + '>';
+					dynamicPartThree = '<img class="song-play-action album-page-link" src="play.png"></img>';
+					dynamicPartFour = '<p>' + data['data']['songs'][i]['title'] + '</p>';
+					dynamicPartFive = '<span>' + data['data']['songs'][i]['views'] + ' views </span>';
+					dynamicPartSix = '<div class="clearfix"></div><span class="flaticon-clock96">' + data['data']['songs'][i]['duration'] + '</span>';
+
+					dynamicPartsTwo = titleDiv + dynamicPartFour + dynamicPartFive + dynamicPartSix;                      
+
+					htmlRowEl = rowInitial + dynamicPartTwo + dynamicPartThree + dynamicPartOne + dynamicPartsTwo + twoClosingDivs;
+
+					$('.album-music-container').append(htmlRowEl);
+
+			    }
+
+			    $('.video-block').each(function(i) {
+
+					var topOfObject = $(this).offset().top,
+					    bottomOfWindow = $(window).scrollTop() + $(window).height();
+
+					if (bottomOfWindow > topOfObject) {
+					    $(this).animate({'opacity': '1'}, 500);
+					}
+
+			    });
+
+            }
+
+        });
+
+	});

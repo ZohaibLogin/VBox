@@ -1,0 +1,658 @@
+.container-fluid.main-inner-container.no-padding-left
+	.row.kh-main-content.no-padding
+		- if session[:phone_number] != "" && session[:phone_number]
+			- if @response['status'] == 404
+				p.signin-message The content is not available for your telco
+			- else
+				.category-main-section.video-play.col-md-9.col-sm-9.col-xs-12.no-padding
+					= render "video_markup"
+
+					.single-video-content
+						span.video-title = @response['title']
+						span.pull-right.video-views = @response['views'].to_s + " views"
+						.clearfix
+						.v-detail-line
+							.line-thin
+							.line-dark
+						.v-video-page-icons
+							#shareIconsCountInside.v-video-page-social
+							- if @response['likes'].length > 0
+								span.video-favorite-count.pull-right = @response['likes'].length
+							- else
+								span.video-favorite-count.pull-right 0
+							- if @response['liked'] == false
+								.video-page-like-share-action
+							- if @response['liked'] == true
+								.video-page-like-share-action.liked-video
+					.single-video-comments
+						.comments-count 
+							p Comments
+							p.dot 
+							p.comments-total-count 
+						img.comments-placeholder src="comments_placeholder.png"
+						input.new-comment-name type="text" placeholder="Name" value=session[:name]
+						br 
+						input.new-comment-text type="text" placeholder="Write a public comment"
+						br
+						button.btn.post-comment-btn SEND
+						.comments-container
+							img.comments-loader src="loader_spiffy.gif"
+						.hp-first-loader.v-hide
+				.category-sub-section.bollywood-sub-section-color.col-md-3.col-sm-3.col-xs-12.no-padding
+					h3.no-margin-bottom.no-margin-top Recommended
+					.featured-section.trending-background.video-play-sm-section
+						- @response['related'].each do |related|
+							.featured-video-block
+								a.ajax-link href="/video?id=#{related['id']}"
+									img.img-responsive src = related['thumb_large']
+									.featured-content
+										p = related['title']
+										span = related['views']
+										span  views
+		- else
+			p.signin-message Please sign in to play 
+			.video-page-signin
+				button.btn.signin data-toggle="modal" data-target="#signInModal" Sign in
+
+
+javascript: 
+
+	$("#shareIconsCountInside").jsSocials({
+		showLabel: false,
+  		showCount: "inside",
+        shares: ["twitter", "facebook", "googleplus", "whatsapp"]
+    });
+
+	MediaElementPlayer.prototype.buildquality = function(player, controls, layers, media) {
+    var
+        // create the quality button
+        quality =  
+        $('<div class="mejs-button mejs-loop-button"> <span title="Quality" class="fa fa-cog"> </span> <div class="v-quality v-hide"> <ul><li class="hd-btn">HD</li><li class="sd-btn">SD</li><li class="md-btn">MD</li><li class="mo-btn">MO</li><li class="gp-btn no-display">3GP</li></ul></div> </div>')
+        // append it to the toolbar
+        .appendTo(controls)
+        // add a click toggle event
+        .hover(function(e) {
+
+        	e.preventDefault();
+        	
+        	if ($('.v-quality').hasClass('v-hide'))
+        		$('.v-quality').removeClass('v-hide');
+        	else
+        		$('.v-quality').addClass('v-hide');
+
+            
+        });  
+        $('.v-quality ul li').click(function(e) {
+
+        	e.preventDefault();
+
+			$(this).siblings().removeClass('active-quality');
+			$(this).addClass('active-quality');
+
+			var hdVideoEl = hdUrl,
+				sdVideoEl = sdUrl,
+				mdVideoEl = mdUrl,
+				moVideoEl = moUrl,
+				gpVideoEl = gp3Url,
+				currentTimeEl = media.currentTime;
+
+			if (!($('.mejs-playpause-button').hasClass('mejs-pause'))) {
+				if ($(this).hasClass("hd-btn")) {
+					player.setSrc(hdVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+				}
+				if ($(this).hasClass("sd-btn")) {
+					player.setSrc(sdVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+				}
+				if ($(this).hasClass("md-btn")) {
+					player.setSrc(mdVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+				}
+				if ($(this).hasClass("mo-btn")) {
+					player.setSrc(moVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+
+				}
+				if ($(this).hasClass("gp-btn")) {
+					player.setSrc(gpVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+				}
+			}
+			else {
+
+				if ($(this).hasClass("hd-btn")) {
+					player.pause();
+					player.setSrc(hdVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+					player.play();
+				}
+				if ($(this).hasClass("sd-btn")) {
+					player.pause();
+					player.setSrc(sdVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+					player.play();
+				}
+				if ($(this).hasClass("md-btn")) {
+					player.pause();
+					player.setSrc(mdVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+					player.play();
+				}
+				if ($(this).hasClass("mo-btn")) {
+					player.pause();
+					player.setSrc(moVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+					player.play();
+
+				}
+				if ($(this).hasClass("gp-btn")) {
+					player.pause();
+					player.setSrc(gpVideoEl);
+					if (!(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) {
+						media.setCurrentTime(currentTimeEl);
+					}
+					player.play();
+				}
+			}
+
+		});   
+	}
+	
+	var player = new MediaElementPlayer('#player2',	{
+	
+		features: ['playpause', 'progress', 'volume', 'current', 'duration', 'quality', 'fullscreen']
+
+	});
+
+	$('input.new-comment-text').keyup(function(e) {
+
+		e.preventDefault();
+
+		if (e.keyCode == 13) {
+
+			var commentRow = '<div class="comment-row">',
+				placeholderImg = '<img class="comments-placeholder" src="comments_placeholder.png"></img>',
+				commentWrapper = '<div class="single-comment-wrapper">',
+				commentName = '<div class="comment-name">',
+				commentText = '<div class="comment-text">',
+				commentUserActions = '<div class="comment-user-actions">',
+				clearfix = '<div class="clearfix"></div>',
+				closingDiv = '</div>';
+
+			var name = $('input.new-comment-name').val();
+			var text = $('input.new-comment-text').val();
+
+			if (name=='' || text=='') {
+				$.notify("Kindly fill in the fields to post a comment.");
+				return;
+			}
+
+			var htmlRow;
+				
+
+			var videoId = getParameterByName('id');
+
+			var videoIdDataToSend = { id: videoId, name: name, text: text };
+
+			$.notify("Posting a comment!", "info");
+
+			bp_ajax({
+
+				action: 'post_video_comment',
+				method: 'get',
+				contentType: 'application/json',
+				data: videoIdDataToSend,
+				notifications: false,
+				spinner: true,
+				callback: function(data) {
+
+					$.notify("Comment Posted!", "success");
+
+					commentsCounter = commentsCounter + 1;
+					$('.comments-total-count').text(commentsCounter);
+
+					var personName = '<p>' + name + '</p>';
+			    	var personText = '<p class="non-editable-comment">' + text + '</p>';
+			    	var timeField = '<time class="timeago" datetime=' + data['data']['comment']['created_at'] + '></time>';
+			    	var editableTextField = '<input type="text" class="no-display editable-comment" value="' + data['data']['comment']['text'] + '">';
+			    	var commentId = '<input type="hidden" class="comment-id" value="' + data['data']['comment']['id'] + '">';
+			    	
+			    	var editCommentBtn = '<button id="' + i + '" onclick="editCommentFunc(this.id)" class="edit-comment-btn fa fa-pencil-square-o"> Edit </button>',
+					 	removeCommentBtn = '<button id="a' + i + '" onclick="deleteCommentFunc(this.id)" class="remove-comment-btn fa fa-trash"> Remove </button>'; 
+
+					htmlRow = commentRow + commentId + placeholderImg + commentWrapper + commentName + personName + timeField + closingDiv
+					    	 + commentText + editableTextField + personText + closingDiv + commentUserActions + editCommentBtn + removeCommentBtn + closingDiv
+					    	  + closingDiv + closingDiv;
+
+					$('.comments-container').prepend(htmlRow);
+					$('input.new-comment-text').val("");
+
+					$("time.timeago").timeago();
+
+				}
+
+			});
+			
+		}
+	});
+
+	$('.post-comment-btn').click(function(e) {
+
+		e.preventDefault();
+
+		var commentRow = '<div class="comment-row">',
+			placeholderImg = '<img class="comments-placeholder" src="comments_placeholder.png"></img>',
+			commentWrapper = '<div class="single-comment-wrapper">',
+			commentName = '<div class="comment-name">',
+			commentText = '<div class="comment-text">',
+			commentUserActions = '<div class="comment-user-actions">',
+			clearfix = '<div class="clearfix"></div>',
+			closingDiv = '</div>';
+
+		var name = $('input.new-comment-name').val();
+		var text = $('input.new-comment-text').val();
+
+		if (name=='' || text=='') {
+			$.notify("Kindly fill in the fields to post a comment.");
+			return;
+		}
+
+		$.notify("Posting a comment!", "info");
+
+		var htmlRow;
+			
+
+		var videoId = getParameterByName('id');
+
+		var videoIdDataToSend = { id: videoId, name: name, text: text };
+
+		bp_ajax({
+
+			action: 'post_video_comment',
+			method: 'get',
+			contentType: 'application/json',
+			data: videoIdDataToSend,
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				$.notify("Comment Posted!", "success");
+
+				commentsCounter = commentsCounter + 1;
+				$('.comments-total-count').text(commentsCounter);
+
+				var personName = '<p>' + name + '</p>';
+		    	var personText = '<p class="non-editable-comment">' + text + '</p>';
+		    	var timeField = '<time class="timeago" datetime=' + data['data']['comment']['created_at'] + '></time>';
+		    	var editableTextField = '<input type="text" class="no-display editable-comment" value="' + data['data']['comment']['text'] + '">';
+		    	var commentId = '<input type="hidden" class="comment-id" value="' + data['data']['comment']['id'] + '">';
+		    	
+		    	var editCommentBtn = '<button id="' + i + '" onclick="editCommentFunc(this.id)" class="edit-comment-btn fa fa-pencil-square-o"> Edit </button>',
+				 	removeCommentBtn = '<button id="a' + i + '" onclick="deleteCommentFunc(this.id)" class="remove-comment-btn fa fa-trash"> Remove </button>'; 
+
+				htmlRow = commentRow + commentId + placeholderImg + commentWrapper + commentName + personName + timeField + closingDiv
+				    	 + commentText + editableTextField + personText + closingDiv + commentUserActions + editCommentBtn + removeCommentBtn + closingDiv
+				    	  + closingDiv + closingDiv;
+
+				$('.comments-container').prepend(htmlRow);
+				$('input.new-comment-text').val("");
+				$("time.timeago").timeago();
+			}
+
+		});
+
+		
+
+	});
+
+	function getParameterByName(name) {
+
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+      
+    }
+
+	$('.video-page-like-share-action').click(function(e) {
+
+		e.preventDefault();
+
+		var videoId = getParameterByName('id');
+
+		var videoIdDataToSend = { id: videoId };
+
+		var favCount = $('.video-favorite-count').text();
+
+		if (!($(this).hasClass('liked-video'))) {
+
+			$(this).addClass('liked-video');
+
+			favCount++;
+			$('.video-favorite-count').text(favCount);
+			
+			$.notify("Video added to Favorites!", "success");
+
+			bp_ajax({
+
+				action: 'single_video_like',
+				method: 'get',
+				contentType: 'application/json',
+				data: videoIdDataToSend,
+				notifications: false,
+				spinner: true,
+				callback: function(data) {
+
+				}
+
+			});
+		
+		}
+
+		else {
+
+			$(this).removeClass('liked-video');
+
+			favCount = favCount - 1;
+			$('.video-favorite-count').text(favCount);
+
+			$.notify("Video removed from Favorites!", "success");
+
+			bp_ajax({
+
+				action: 'single_video_unlike',
+				method: 'get',
+				contentType: 'application/json',
+				data: videoIdDataToSend,
+				notifications: false,
+				spinner: true,
+				callback: function(data) {	
+				    
+				}
+
+			});
+		}
+
+	});
+
+	var commentsCounter = 0;
+
+	function videoComments() {
+
+		var videoIdDataToSend = { id: getParameterByName('id') };
+		var htmlRow, name, text;
+
+		var commentRow = '<div class="comment-row">',
+			placeholderImg = '<img class="comments-placeholder" src="comments_placeholder.png"></img>',
+			commentWrapper = '<div class="single-comment-wrapper">',
+			commentName = '<div class="comment-name">',
+			commentText = '<div class="comment-text">',
+			commentUserActions = '<div class="comment-user-actions">',
+			clearfix = '<div class="clearfix"></div>',
+			closingDiv = '</div>';
+
+		bp_ajax({
+
+			action: 'video_comments',
+			method: 'get',
+			contentType: 'application/json',
+			data: videoIdDataToSend,
+			notifications: false,
+			spinner: true,
+			callback: function(data) {
+
+				$('.comments-loader').addClass('v-hide');	
+
+				var userId = data['data'][1];
+
+				commentsCounter = data['data'][0]['data'].length;
+
+				$('.comments-total-count').text(commentsCounter);
+
+			    for (var i=0; i<data['data'][0]['data'].length; i++) {
+
+			    	name = data['data'][0]['data'][i]['name'];
+			    	text = data['data'][0]['data'][i]['text'];
+
+			    	if (name == '') {
+			    		name = "Anonymous";
+			    	}
+
+			    	var personName = '<p>' + name + '</p>';
+			    	var personText = '<p class="non-editable-comment">' + text + '</p>';
+			    	var timeField = '<time class="timeago" datetime=' + data['data'][0]['data'][i]['created_at'] + '></time>';
+			    	var editableTextField = '<input type="text" class="no-display editable-comment" value="' + data['data'][0]['data'][i]['text'] + '">';
+			    	var commentId = '<input type="hidden" class="comment-id" value="' + data['data'][0]['data'][i]['id'] + '">';
+			    	
+			    	var editCommentBtn = '<button id="' + i + '" onclick="editCommentFunc(this.id)" class="edit-comment-btn fa fa-pencil-square-o"> Edit </button>',
+					 	removeCommentBtn = '<button id="a' + i + '" onclick="deleteCommentFunc(this.id)" class="remove-comment-btn fa fa-trash"> Remove </button>'; 
+
+			    	if (userId == data['data'][0]['data'][i]['user_id']) {
+
+			    	
+				    	htmlRow = commentRow + commentId + placeholderImg + commentWrapper + commentName + personName + timeField + closingDiv
+				    	 + commentText + editableTextField + personText + closingDiv + commentUserActions + editCommentBtn + removeCommentBtn + closingDiv
+				    	  + closingDiv + closingDiv;
+				   	}
+				   	else {
+
+				   		htmlRow = commentRow + placeholderImg + commentWrapper + commentName + personName + timeField + closingDiv
+				    	 + commentText + personText + closingDiv + closingDiv + closingDiv;
+				   	}
+					
+					$('.comments-container').append(htmlRow);
+
+			    }
+			    $("time.timeago").timeago();
+			  
+			}
+
+		});
+	
+	}
+
+	$('.comments-container').on('keyup', 'input.editable-comment', function(e) {
+		
+		if (e.keyCode == 13) {
+			
+			var editedComment = $(this).val();
+			var commentId = $(this).parent().parent().siblings('input.comment-id').val();
+
+			var dataToSend = { id: commentId, text: editedComment };
+
+			$(this).addClass('no-display');
+			$(this).siblings('p.non-editable-comment').text(editedComment).removeClass('no-display');
+
+			bp_ajax({
+
+			action: 'edit_comment',
+			method: 'get',
+			contentType: 'application/json',
+			data: dataToSend,
+			notifications: false,
+			spinner: true,
+			callback: function(data) {	
+
+				$.notify('Comment Edited!', "success");
+
+			}
+
+
+			});
+		} 
+	});
+
+	function editCommentFunc(this_div_id) {
+		
+		$("#" + this_div_id).parent().siblings('.comment-text').children('input').removeClass('no-display');
+
+		$("#" + this_div_id).parent().siblings('.comment-text').children('input').focus();
+
+		$("#" + this_div_id).parent().siblings('.comment-text').children('p').addClass('no-display');
+
+	}
+
+	function deleteCommentFunc(this_div_id) {
+		
+		var commentId = $("#" + this_div_id).parent().parent().siblings('input.comment-id').val();
+		var dataToSend = { id: commentId };
+
+		$("#" + this_div_id).parent().parent().parent().remove();
+
+		commentsCounter = commentsCounter - 1;
+		$('.comments-total-count').text(commentsCounter);
+		
+		bp_ajax({
+
+			action: 'delete_comment',
+			method: 'get',
+			contentType: 'application/json',
+			data: dataToSend,
+			notifications: false,
+			spinner: true,
+			callback: function(data) {	
+
+				$.notify('Comment Deleted!', "success");
+
+			}
+		});
+
+	}
+
+	var hdUrl, sdUrl, mdUrl, moUrl, gp3Url;
+
+	function getVideoQualities() {
+
+		var videoId = getParameterByName('id'),
+			dataToSend = { id: videoId };
+
+		bp_ajax({
+
+			action: 'single_video_details',
+			method: 'get',
+			contentType: 'application/json',
+			data: dataToSend,
+			notifications: false,
+			spinner: true,
+			callback: function(data) {	
+
+				if (data['data']['qualities'][0]) {
+				
+					if (data['data']['qualities'][0]['quality_name'] == 'HD') {
+						$('.hd-btn').addClass('active-quality');
+						hdUrl = data['data']['qualities'][0]['url'];
+					}
+
+					if (data['data']['qualities'][0]['quality_name'] == 'SD') {
+						$('.sd-btn').addClass('active-quality');
+						sdUrl = data['data']['qualities'][0]['url'];
+					}
+
+					if (data['data']['qualities'][0]['quality_name'] == 'MD') {
+						$('.md-btn').addClass('active-quality');
+						mdUrl = data['data']['qualities'][0]['url'];
+					}
+
+					if (data['data']['qualities'][0]['quality_name'] == 'MO' && data['data']['qualities'][0]['video_file_content_type'] == 'video/mp4') {
+						$('.mo-btn').addClass('active-quality');
+						moUrl = data['data']['qualities'][0]['url'];
+					}
+				}
+
+				if (data['data']['qualities'][1]) {
+				
+					if (data['data']['qualities'][1]['quality_name'] == 'HD')
+						hdUrl = data['data']['qualities'][1]['url'];
+
+					if (data['data']['qualities'][1]['quality_name'] == 'SD')
+						sdUrl = data['data']['qualities'][1]['url'];
+
+					if (data['data']['qualities'][1]['quality_name'] == 'MD')
+						mdUrl = data['data']['qualities'][1]['url'];
+
+					if (data['data']['qualities'][1]['quality_name'] == 'MO' && data['data']['qualities'][0]['video_file_content_type'] == 'video/mp4')
+						moUrl = data['data']['qualities'][1]['url'];
+
+				}
+
+				if (data['data']['qualities'][2]) {
+					
+					if (data['data']['qualities'][2]['quality_name'] == 'HD')
+						hdUrl = data['data']['qualities'][2]['url'];
+
+					if (data['data']['qualities'][2]['quality_name'] == 'SD')
+						sdUrl = data['data']['qualities'][2]['url'];
+
+					if (data['data']['qualities'][2]['quality_name'] == 'MD')
+						mdUrl = data['data']['qualities'][2]['url'];
+
+					if (data['data']['qualities'][2]['quality_name'] == 'MO' && data['data']['qualities'][0]['video_file_content_type'] == 'video/mp4')
+						moUrl = data['data']['qualities'][2]['url'];
+
+				}
+
+				if (data['data']['qualities'][3]) {
+				
+					if (data['data']['qualities'][3]['quality_name'] == 'HD')
+						hdUrl = data['data']['qualities'][3]['url'];
+
+					if (data['data']['qualities'][3]['quality_name'] == 'SD')
+						sdUrl = data['data']['qualities'][3]['url'];
+
+					if (data['data']['qualities'][3]['quality_name'] == 'MD')
+						mdUrl = data['data']['qualities'][3]['url'];
+
+					if (data['data']['qualities'][3]['quality_name'] == 'MO' && data['data']['qualities'][0]['video_file_content_type'] == 'video/mp4')
+						moUrl = data['data']['qualities'][3]['url'];
+
+				}
+				
+				gp3Url = data['data']['3gp_video_url'];
+
+				if (!hdUrl) {
+					$('.hd-btn').addClass('v-hide');
+				}
+				if (!sdUrl) {
+					$('.sd-btn').addClass('v-hide');
+				}
+				if (!mdUrl) {
+					$('.md-btn').addClass('v-hide');
+				}
+				if (!moUrl) {
+					$('.mo-btn').addClass('v-hide');
+				}
+
+			}
+		});
+
+	}
+
+	$(window).load(function() {
+
+		getVideoQualities();
+		
+		videoComments();
+
+
+	});
+
+	
